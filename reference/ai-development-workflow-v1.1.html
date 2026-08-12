@@ -535,6 +535,16 @@ grep-explorer
 # choose Fast Path or Deliberate Path
 # continue the next action</pre>
 
+    <h3>Windows launcher boundary</h3>
+    <p>
+      Windows users may run <code>scripts/start-ai-project.ps1</code> with a repository path and optional
+      session name or WSL distribution. It is intentionally a thin front-end:
+      PowerShell &rarr; WSL &rarr; <code>start-ai-project.sh</code> &rarr; tmux. The Bash launcher remains the
+      single implementation of the <code>agent</code>, <code>test</code>, <code>git</code>, and <code>logs</code>
+      windows, handles paths with spaces, and does not launch an AI provider automatically. WSL and tmux
+      remain required; no competing native Windows workspace is introduced.
+    </p>
+
     <h3>Windows / Git / EOL diagnosis</h3>
     <p>
       If a tracked file appears unexpectedly modified on Windows, inspect actual Git state before cleanup:
