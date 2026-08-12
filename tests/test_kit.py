@@ -137,7 +137,7 @@ class KitContractTests(unittest.TestCase):
         self.assertIn("STOP and report", text)
 
     def test_reference_contains_p0_operating_contract(self):
-        text = (ROOT / "reference" / "ai-development-workflow-v1.1.html").read_text(encoding="utf-8")
+        text = (ROOT / "reference" / "ai-development-workflow-v1.2.html").read_text(encoding="utf-8")
         text = " ".join(text.split())
         for term in [
             "Evidence hierarchy",
@@ -168,7 +168,7 @@ class KitContractTests(unittest.TestCase):
     def test_eol_diagnostic_guidance_is_evidence_first(self):
         texts = [
             (ROOT / "README.md").read_text(encoding="utf-8"),
-            (ROOT / "reference" / "ai-development-workflow-v1.1.html").read_text(encoding="utf-8"),
+            (ROOT / "reference" / "ai-development-workflow-v1.2.html").read_text(encoding="utf-8"),
         ]
         for text in texts:
             self.assertIn("git hash-object --path", text)
@@ -313,6 +313,7 @@ class PowerShellContractTests(unittest.TestCase):
             self.assertNotIn(f"-n {window}", text)
 
 
+    def test_initializer_powershell_contract(self):
         path = SCRIPTS / "init-ai-workflow.ps1"
         self.assertTrue(path.exists())
         text = path.read_text(encoding="utf-8")
@@ -329,6 +330,8 @@ class PowerShellContractTests(unittest.TestCase):
         self.assertNotIn("Invoke-WebRequest", text)
         self.assertNotIn("irm ", text.lower())
 
+
+class PackageHygieneTests(unittest.TestCase):
     def test_gitignore_excludes_python_cache(self):
         text = (ROOT / ".gitignore").read_text(encoding="utf-8")
         self.assertIn("__pycache__/", text)
@@ -338,13 +341,20 @@ class PowerShellContractTests(unittest.TestCase):
         path = ROOT / "docs" / "RELEASE-CHECKLIST.md"
         self.assertTrue(path.exists())
         text = path.read_text(encoding="utf-8")
-        for term in [".git/", "__pycache__/", "*.pyc", "temporary", "Extract the ZIP", "Regenerate `MANIFEST.txt`", "P2 does not", "VERSION"]:
+        for term in [".git/", "__pycache__/", "*.pyc", "temporary", "Extract the ZIP", "Regenerate `MANIFEST.txt`", "VERSION"]:
             self.assertIn(term, text)
 
-    def test_gitignore_excludes_python_cache(self):
-        text = (ROOT / ".gitignore").read_text(encoding="utf-8")
-        self.assertIn("__pycache__/", text)
-        self.assertIn("*.py[cod]", text)
+
+class FinalReleaseContractTests(unittest.TestCase):
+    def test_v12_version_and_reference_alignment(self):
+        version = (ROOT / "VERSION").read_text(encoding="utf-8")
+        self.assertEqual(version, "1.2.0" + chr(10))
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("AI Development Workflow V1.2", readme)
+        self.assertIn("reference/ai-development-workflow-v1.2.html", readme)
+        self.assertTrue((ROOT / "reference" / "ai-development-workflow-v1.2.html").exists())
+        self.assertFalse((ROOT / "reference" / "ai-development-workflow-v1.1.html").exists())
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
