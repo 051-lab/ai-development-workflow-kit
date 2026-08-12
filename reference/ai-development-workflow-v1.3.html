@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AI Development Workflow V1.3 — Working Reference Candidate</title></head>
+<body>
+<main>
+<h1>AI Development Workflow V1.3 — Bounded Execution</h1>
+<p><strong>working reference candidate — not a V1.3.0 release.</strong> This document is implementation-stage material. VERSION remains 1.2.0; final RC/pilot, manifest, package, tag, and release alignment are outside this artifact.</p>
+<h2>Positioning</h2>
+<p>V1.3 keeps evidence-first, human-controlled development while allowing agents to execute an approved bounded outcome through safe lifecycle gates without unnecessary human relay. The repository remains the durable source of truth, with exactly five Markdown state files.</p>
+<pre>V1.2 relay: Human → Agent → Human → Agent → Human → Agent
+V1.3:       Human authorizes bounded goal → agent executes safe gates → completed result or meaningful decision stop</pre>
+<h2>Bounded Execution Window</h2>
+<p>A Bounded Execution Window defines the approved goal, scope, constraints, acceptance criteria, verification, furthest authorized lifecycle boundary, and applicable STOP CONDITIONS. It permits multiple safe execution steps for one coherent outcome, not unrestricted autonomy.</p>
+<h3>Lifecycle gates</h3>
+<pre>G0 PREFLIGHT
+  ↓ G1 UNDERSTAND / SCOPE
+  ↓ G2 IMPLEMENT
+  ↓ G3 VERIFY
+  ↓ G4 REVIEW
+  ↓ G5 PUBLISH
+  ↓ G6 CI / EXTERNAL VALIDATION
+  ↓ G7 MERGE / SYNCHRONIZE
+  ↓ G8 DURABLE STATE / HANDOFF</pre>
+<p>Routine progression continues when evidence supports it and the next gate is authorized. A successful command, local commit, normal push, PR creation, queued/running CI, or passed CI is not by itself a human handoff.</p>
+<h2>Lifecycle boundaries</h2>
+<ul><li><strong>LOCAL IMPLEMENTATION:</strong> inspect, diagnose, edit, focused tests, project validation, diff review, reviewed staging, ordinary local commit; stop before push.</li><li><strong>PR:</strong> additionally normal feature-branch push, PR creation, and PR metadata/diff verification; stop before merge unless authorized.</li><li><strong>MERGED / SYNCHRONIZED MAIN:</strong> additionally required CI observation, normal merge after required gates, expected-head guard, fetch, safe fast-forward-only synchronization, and stable STATE reconciliation.</li></ul>
+<h2>STOP CONDITIONS</h2>
+<p>Stop for unexplained working-tree or repository context, material scope expansion, unresolved architecture or product decision, acceptance conflict, security/data-safety concern, failed required validation, unexpected remote divergence, merge conflict, credential exposure, evidence contradicting the approved plan, destructive action not explicitly authorized, or any attempt to exceed the furthest authorized lifecycle boundary. The human chooses goals, priorities, consequential tradeoffs, compatibility breaks, destructive actions, and release scope.</p>
+<h2>External gates and routine recovery</h2>
+<p>Queued/running external validation is not failure. A capable active session may recheck; when the environment cannot remain active or retrieve the result, report <code>PAUSED AT EXTERNAL GATE</code> and never imply background monitoring. Session-only initialization of an already-installed runtime or version manager, Git metadata refresh, and evidence-supported retry may be routine. Installing tools, persistent PATH/profile edits, dependency changes, global Git configuration, and history rewriting are not automatically routine.</p>
+<h2>STATE semantics</h2>
+<p><code>STATE.md</code> preserves exactly one bounded Next Action: one coherent outcome with one independently verifiable completion state. Multiple safe steps may realize it; unrelated goals remain separate. STATE preserves conclusions and load-bearing evidence, while investigation history belongs in Git, PR discussions, test output, CI logs, or durable references. Reconcile state at meaningful/stable boundaries; do not create recursive metadata-chasing commits.</p>
+<h2>Migration and non-goals</h2>
+<p>V1.2 repositories adopt these semantics during normal work and do not require destructive reinitialization or a sixth state file. V1.3 is not A2A, a daemon, database, cloud platform, scheduler, GitHub bot, permission service, agent swarm, or replacement for GitHub Actions.</p>
+</main>
+</body>
+</html>

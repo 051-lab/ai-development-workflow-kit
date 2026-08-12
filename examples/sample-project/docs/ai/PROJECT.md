@@ -4,7 +4,7 @@
 Sample Project
 
 ## Purpose
-Demonstrate how concise V1.1 project state can look after initialization.
+Demonstrate how concise bounded-execution project state can look after initialization.
 
 ## Current Scope
 A small command-line utility with one supported command.

@@ -48,10 +48,30 @@ class KitContractTests(unittest.TestCase):
         self.assertIn("verify", text.lower())
         self.assertIn("escalat", text.lower())
 
-    def test_deliberate_builder_has_handoff_contract(self):
-        text = (PROMPTS / "DELIBERATE-BUILDER.md").read_text(encoding="utf-8")
+    def test_deliberate_handoffs_define_execution_window_and_stops(self):
+        planner = (PROMPTS / "DELIBERATE-PLANNER.md").read_text(encoding="utf-8")
+        builder = (PROMPTS / "DELIBERATE-BUILDER.md").read_text(encoding="utf-8")
+        operator = (PROMPTS / "OPERATOR.md").read_text(encoding="utf-8")
         for term in ["GOAL", "CURRENT STATE", "SCOPE", "CONSTRAINTS", "ACCEPTANCE CRITERIA", "VERIFICATION", "RETURN"]:
-            self.assertIn(term, text)
+            self.assertIn(term, planner)
+            self.assertIn(term, builder)
+        for term in [
+            "routine gates",
+            "execution window",
+            "lifecycle boundary reached",
+            "stop conditions encountered",
+            "decisions made inside delegated authority",
+            "durable-state update performed",
+        ]:
+            self.assertIn(term, builder)
+        for term in [
+            "EXECUTION CONTINUITY",
+            "FURTHEST LIFECYCLE BOUNDARY",
+            "ROUTINE REVERSIBLE ENVIRONMENT RECOVERY",
+            "EXTERNAL GATE HONESTY",
+            "human decides",
+        ]:
+            self.assertIn(term, operator)
 
     def test_state_template_contains_evidence_authority_wording(self):
         text = (TEMPLATES / "STATE.md").read_text(encoding="utf-8")
@@ -61,32 +81,65 @@ class KitContractTests(unittest.TestCase):
         self.assertIn("meaningful project or handoff boundary", text)
         self.assertIn("STATE.md must not become a workflow manual", text)
 
-    def test_state_template_defines_atomic_next_action(self):
+    def test_state_template_defines_bounded_next_action(self):
         text = (TEMPLATES / "STATE.md").read_text(encoding="utf-8")
-        self.assertIn("atomic", text.lower())
-        self.assertIn("one independently verifiable completion state", text)
-        self.assertIn('with "and"', text)
+        for term in [
+            "one bounded outcome",
+            "one independently verifiable completion state",
+            "multiple safe execution steps",
+            "BOUNDED EXECUTION WINDOW",
+            "furthest authorized lifecycle boundary",
+            "G0",
+            "G8",
+            "STOP CONDITIONS",
+            "STATE preserves conclusions and load-bearing evidence",
+        ]:
+            self.assertIn(term, text)
+        self.assertNotIn("one atomic next action", text.lower())
+
+    def test_state_template_preserves_concise_boundary_guidance(self):
+        text = (TEMPLATES / "STATE.md").read_text(encoding="utf-8")
+        self.assertIn("meaningful project or handoff boundary", text)
+        self.assertIn("routine lifecycle steps", text)
+        self.assertIn("unrelated goals", text)
+        self.assertIn("human", text.lower())
 
     def test_state_template_contains_fast_and_deliberate_definitions(self):
         text = (TEMPLATES / "STATE.md").read_text(encoding="utf-8")
         self.assertIn("Fast Path = contained, clear, low-risk, easy to verify.", text)
         self.assertIn("Deliberate Path = ambiguous, architectural, risky, cross-cutting, or consequential.", text)
 
-    def test_fast_path_requires_atomic_next_action_and_evidence_reconciliation(self):
+    def test_fast_path_requires_bounded_execution_continuity(self):
         text = (PROMPTS / "FAST-PATH.md").read_text(encoding="utf-8")
-        self.assertIn("atomic", text.lower())
-        self.assertIn("Reconcile evidence", text)
-        self.assertIn("verified evidence as authoritative", text)
+        for term in [
+            "bounded outcome",
+            "execution window",
+            "authorized lifecycle boundary",
+            "routine lifecycle gates",
+            "meaningful boundary",
+            "STOP",
+            "PAUSED AT EXTERNAL GATE",
+        ]:
+            self.assertIn(term, text)
+        self.assertNotIn("without bundling separate lifecycle operations", text)
 
     def test_resume_project_evidence_overrides_stale_state(self):
         text = (PROMPTS / "RESUME-PROJECT.md").read_text(encoding="utf-8")
         self.assertIn("verified repository evidence as authoritative", text)
         self.assertIn("overriding stale", text)
 
-    def test_resume_project_prohibits_correction_loop(self):
+    def test_resume_project_defines_bounded_resume_and_external_honesty(self):
         text = (PROMPTS / "RESUME-PROJECT.md").read_text(encoding="utf-8")
-        self.assertIn("Do NOT create a STATE-only correction commit", text)
-        self.assertIn("atomic", text.lower())
+        for term in [
+            "bounded Next Action",
+            "current lifecycle position",
+            "furthest authorized boundary",
+            "human input is actually required",
+            "PAUSED AT EXTERNAL GATE",
+            "Do NOT create a STATE-only correction commit",
+        ]:
+            self.assertIn(term, text)
+        self.assertNotIn("without bundling separate lifecycle operations", text)
 
     def test_deliberate_builder_contains_evidence_and_state_discipline(self):
         text = (PROMPTS / "DELIBERATE-BUILDER.md").read_text(encoding="utf-8")
@@ -153,19 +206,29 @@ class KitContractTests(unittest.TestCase):
         ]:
             self.assertIn(term, text)
 
-    def test_review_prompt_requires_p1_evidence_contract(self):
+    def test_review_prompt_requires_bounded_outcome_contract(self):
         text = (PROMPTS / "REVIEW.md").read_text(encoding="utf-8")
         for term in [
-            "actual diff", "acceptance criteria", "verified repository/Git/remote/CI/test evidence",
-            "stale STATE claims", "atomic operation", "independently verifiable completion state",
-            "metadata-chasing commits", "material", "Do not invent failures",
+            "bounded outcome",
+            "EXECUTION-WINDOW COMPLIANCE",
+            "STOP-CONDITION COMPLIANCE",
+            "furthest authorized lifecycle boundary",
+            "unauthorized publish/merge/destructive behavior",
+            "unnecessarily at a routine safe gate",
             "PASS", "PASS WITH FOLLOW-UP", "FIX REQUIRED",
         ]:
             self.assertIn(term, text)
-        self.assertIn("routine stale-state mismatch", text)
-        self.assertIn("does not automatically require", text)
+        self.assertNotIn("exactly one atomic operation", text)
 
-    def test_eol_diagnostic_guidance_is_evidence_first(self):
+    def test_readme_and_reference_describe_v13_working_contract(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        reference = (ROOT / "reference" / "ai-development-workflow-v1.3.html").read_text(encoding="utf-8")
+        for text in [readme, reference]:
+            for term in ["Bounded Execution Window", "furthest authorized lifecycle boundary", "G0", "G8", "STOP CONDITIONS"]:
+                self.assertIn(term, text)
+        self.assertIn("working reference candidate", reference)
+        self.assertIn("not a V1.3.0 release", reference)
+
         texts = [
             (ROOT / "README.md").read_text(encoding="utf-8"),
             (ROOT / "reference" / "ai-development-workflow-v1.2.html").read_text(encoding="utf-8"),
@@ -189,7 +252,10 @@ class KitContractTests(unittest.TestCase):
         self.assertIn("Illustrative workflow-state example", text)
         self.assertIn("runnable sample-project source is not included", text)
         self.assertIn("evidence overrides stale STATE.md claims", text)
-        self.assertIn("one atomic, independently verifiable operation", text)
+        self.assertIn("one bounded outcome", text)
+        self.assertIn("execution window", text.lower())
+        self.assertIn("furthest authorized lifecycle boundary", text)
+        self.assertIn("STOP CONDITIONS", text)
         self.assertNotIn("TODO", text)
         self.assertNotIn("TBD", text)
 
