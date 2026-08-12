@@ -1,16 +1,48 @@
-# AI Development Workflow V1.2 — Project Kit
+# AI Development Workflow V1.3 — Bounded Execution Kit
 
-This kit turns the V1.2 workflow into reusable repository files and small local helpers. It intentionally does **not** become a workflow manager. Markdown owns durable state; Git owns code history; your AI tools remain interchangeable.
+The historical V1.2 identity is preserved in `reference/ai-development-workflow-v1.2.html` (AI Development Workflow V1.2). This working kit evolves so an agent may execute one approved bounded outcome through safe routine lifecycle gates without unnecessary human relay. It intentionally does **not** become a workflow manager. Markdown owns durable state; Git owns code history; your AI tools remain interchangeable.
 
-The current V1.2 reference is `reference/ai-development-workflow-v1.2.html`.
+The accepted historical baseline remains `reference/ai-development-workflow-v1.2.html` (V1.2). A working V1.3 reference candidate is `reference/ai-development-workflow-v1.3.html`; it is not a V1.3.0 release. `VERSION`, final `MANIFEST.txt`, packaging, tagging, and release alignment remain finalization work.
 
-## What This Kit Establishes
+The permanent source checkout identity is `ai-development-workflow-kit`. Versioned names such as `ai-development-workflow-project-kit-v1.2.zip` and `ai-development-workflow-project-kit-v1.3.zip` refer to distributions, not source directories.
+
+### Bounded Execution Window
+
+V1.3 separates persistent-state atomicity from execution-step atomicity. `STATE.md` still records exactly one bounded outcome with one independently verifiable completion state. That outcome may require multiple safe steps and routine lifecycle gates.
+
+An explicitly authorized **Bounded Execution Window** defines the approved goal, scope, constraints, acceptance criteria, verification, furthest authorized lifecycle boundary, and STOP CONDITIONS. Routine progression continues without a human handoff after every successful command or gate, but the agent never advances beyond the boundary.
+
+The lifecycle is:
+
+```text
+G0 PREFLIGHT → G1 UNDERSTAND / SCOPE → G2 IMPLEMENT → G3 VERIFY
+→ G4 REVIEW → G5 PUBLISH → G6 CI / EXTERNAL VALIDATION
+→ G7 MERGE / SYNCHRONIZE → G8 DURABLE STATE / HANDOFF
+```
+
+The conceptual V1.2 relay:
+
+```text
+Human → Agent → Human → Agent → Human → Agent
+```
+
+becomes, when safely authorized:
+
+```text
+Human authorizes bounded goal → agent executes through safe gates
+→ human receives completed result or meaningful decision stop
+```
+
+The boundary is not unrestricted autonomy. Stop for unexplained state, material scope expansion, unresolved architecture/product decisions, acceptance conflict, security/data-safety concern, failed required validation, unexpected divergence or merge conflict, credential exposure, destructive action, or evidence contradicting the approved plan. A human remains the decision-maker for goals, priorities, consequential tradeoffs, compatibility breaks, destructive actions, and release scope.
+
+Queued/running external CI is not failure. A capable active session may recheck normally; if the environment cannot remain active or retrieve the result, report `PAUSED AT EXTERNAL GATE` rather than implying background monitoring. Routine stale STATE documentation may be reported and reconciled when verified evidence resolves it. Routine session-only recovery of an already-installed runtime or version manager may continue; persistent environment changes remain separately authorized.
+
 
 - Repository state lives in `docs/ai/`.
 - ChatGPT + OpenCode is the default daily pair, not a lock-in.
 - Small contained tasks use the Fast Path.
 - Ambiguous, architectural, risky, or cross-cutting tasks use the Deliberate Path.
-- Notebook stays the formative-thinking tool.
+- `prompts/OPERATOR.md` preserves Human / Planner-Reviewer / Operator roles and execution boundaries.
 - Handy shortcuts quick thoughts into `INBOX.md` or the current coding-agent session.
 - One tmux session maps to one active project with `agent`, `test`, `git`, and `logs` windows.
 - Browser research that matters later is promoted into `REFERENCES.md`.
@@ -19,7 +51,7 @@ The current V1.2 reference is `reference/ai-development-workflow-v1.2.html`.
 ## Kit Layout
 
 ```text
-ai-development-workflow-project-kit-v1.2/
+ai-development-workflow-kit/
 ├── README.md
 ├── VERSION
 ├── templates/docs/ai/
@@ -116,7 +148,7 @@ If hidden architecture, ambiguity, repeated failures, or consequential decisions
 ### Deliberate Path
 Use `prompts/DELIBERATE-PLANNER.md` with ChatGPT for deeper planning. Turn the result into the contract in `prompts/DELIBERATE-BUILDER.md`, then give that scoped handoff to OpenCode, Codex, or the chosen builder.
 
-Use `prompts/REVIEW.md` for independent review based on the actual diff, acceptance criteria, recorded constraints/decisions, verification evidence, and authoritative repository state. It checks stale STATE reconciliation, one atomic Next Action, and stable STATE discipline without inventing unsupported failures.
+Use `prompts/REVIEW.md` for independent review based on the actual diff, bounded outcome, execution-window compliance, stop-condition compliance, acceptance criteria, recorded constraints/decisions, verification evidence, and authoritative repository state.
 
 
 

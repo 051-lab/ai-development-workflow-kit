@@ -1,20 +1,25 @@
-# Fast Path — Builder Prompt
+# Fast Path — Bounded Execution Prompt
 
 Use this when the task is contained, well understood, low-risk, and easy to verify.
 
 Read `docs/ai/PROJECT.md` and `docs/ai/STATE.md` before changing files. Read `docs/ai/DECISIONS.md` when the task could touch an existing architectural or compatibility decision.
 
 Reconcile evidence before changing files: if repository/Git/remote/CI/test evidence conflicts with `STATE.md`, treat verified evidence as authoritative, report the mismatch, and correct `STATE.md` during a bounded state update. Do not create a STATE-only commit merely to chase metadata changed by the previous STATE commit.
+A Fast Path task has one bounded outcome with one independently verifiable completion state. Before editing, make the BOUNDED EXECUTION WINDOW explicit in-session: approved goal, scope, constraints, acceptance criteria, verification, furthest authorized lifecycle boundary, and STOP CONDITIONS. The window may contain multiple safe steps and routine lifecycle gates; it is not unrestricted autonomy.
 
-For the task I provide:
-1. Inspect the relevant code before proposing changes.
-2. State a brief in-session plan appropriate to the size of the task.
-3. Implement only the requested scope.
-4. Run the relevant verification from `PROJECT.md` plus any focused checks needed for the changed behavior.
-5. Review the actual diff for unintended changes.
-6. Update `docs/ai/STATE.md` with what changed, verification results, unresolved risks, and exactly one atomic Next Action — one operation/outcome with one independently verifiable completion state, without bundling separate lifecycle operations.
-7. Report the files changed and verification results concisely.
+1. Perform G0 PREFLIGHT and G1 UNDERSTAND / SCOPE using repository evidence.
+2. State a brief in-session plan and the bounded outcome.
+3. Implement only the approved scope.
+4. Run focused verification, then the authoritative project verification.
+5. Review the actual diff and evidence.
+6. Continue through routine G5 PUBLISH, G6 CI / EXTERNAL VALIDATION, or G7 MERGE / SYNCHRONIZE steps only when the execution window authorizes them and evidence supports continuation. Do not stop merely because one routine lifecycle gate succeeded.
+7. Reconcile `docs/ai/STATE.md` once at a meaningful boundary. Record conclusions and load-bearing evidence, not an incident transcript.
+8. Return the outcome, verification, lifecycle boundary reached, problems, stop conditions, remaining risks, and the next bounded outcome if work remains.
 
-Escalate instead of improvising if you discover unclear architecture, hidden cross-cutting dependencies, repeated verification failure, a security/data-safety concern, a destructive or history-rewriting operation, or a decision with meaningful long-term consequences. In that case, stop implementation at a safe point, update `STATE.md`, explain why the task now needs the Deliberate Path, and identify the decision that must be made.
+Stop and report for hidden architecture, material scope expansion, repeated meaningful failure, security/data-safety concerns, or consequential product/architecture choices; escalate safely to the Deliberate Path.
+
+If CI or another external gate is queued/running, it is not failure. Recheck while the capable session remains active; if this environment cannot remain active or retrieve the result, return `PAUSED AT EXTERNAL GATE` rather than implying background monitoring.
+
+Routine nonpersistent recovery may continue when evidence supports it, such as initializing an already-installed version manager in the current shell, activating an installed project runtime, refreshing Git metadata, or retrying after that session-only correction. Do not install tools, edit persistent PATH/profile, change global Git configuration, change dependency versions, or rewrite history without explicit authorization.
 
 Task follows below:

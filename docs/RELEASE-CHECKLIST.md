@@ -1,6 +1,15 @@
-# V1.2 Release Checklist
+# V1.3 Release Checklist
 
 Maintainer checklist for releasing the workflow kit. This is not project runtime state and does not add to the five-file `docs/ai` model.
+
+## V1.3 implementation / RC readiness
+
+- [ ] Bounded outcome, Bounded Execution Window, lifecycle boundary, and STOP CONDITIONS contracts pass focused tests.
+- [ ] Fast Path, Deliberate Path, Operator, Review, Resume, STATE, example, README, and working reference candidate agree.
+- [ ] V1.2 migration remains non-destructive and preserves existing state by default.
+- [ ] External-gate guidance is truthful for environments without background monitoring.
+- [ ] Routine session-only environment recovery is distinguished from persistent changes.
+
 
 ## Source state
 
