@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>AI Development Workflow — V1.1</title>
+<style>
+  :root {
+    --bg: hsl(222, 32%, 5%);
+    --card: hsla(222, 35%, 7%, 0.86);
+    --card-line: hsla(213, 45%, 45%, 0.25);
+    --rule: hsla(213, 40%, 55%, 0.07);
+    --bone: hsl(40, 25%, 88%);
+    --bone-dim: hsl(40, 15%, 72%);
+    --ink-blue: hsl(213, 50%, 70%);
+    --ink-red: hsl(354, 62%, 62%);
+    --amber: hsl(35, 85%, 62%);
+    --verdigris: hsl(168, 60%, 45%);
+    --purple: hsl(267, 55%, 70%);
+    --mono: 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--bone);
+    font: 17px/1.68 Georgia, 'Times New Roman', serif;
+  }
+  ::selection { background: hsla(168, 60%, 45%, 0.35); }
+  canvas#ink {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 56px 22px 110px;
+  }
+  header h1 {
+    font-family: var(--mono);
+    font-size: 2.05rem;
+    letter-spacing: 0.04em;
+    margin: 0 0 6px;
+    color: hsl(40, 30%, 92%);
+    text-shadow: 0 0 14px hsla(168, 60%, 50%, 0.28);
+  }
+  header .sub {
+    font-family: var(--mono);
+    font-size: 0.86rem;
+    color: var(--bone-dim);
+    margin: 0 0 18px;
+  }
+  .summary {
+    border-left: 3px solid var(--verdigris);
+    background: hsla(168, 60%, 40%, 0.08);
+    padding: 12px 16px;
+    font-size: 0.96rem;
+    color: var(--bone-dim);
+  }
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .principle {
+    padding: 16px 18px;
+    border: 1px solid hsla(35, 85%, 62%, 0.28);
+    border-radius: 10px;
+    background: hsla(35, 85%, 62%, 0.06);
+  }
+  .principle:nth-child(2) {
+    border-color: hsla(168, 60%, 45%, 0.28);
+    background: hsla(168, 60%, 40%, 0.06);
+  }
+  .principle strong {
+    color: var(--amber);
+    font-family: var(--mono);
+  }
+  .principle:nth-child(2) strong { color: var(--verdigris); }
+  section.page {
+    margin-top: 34px;
+    padding: 27px 30px 24px;
+    background: var(--card);
+    background-image: repeating-linear-gradient(
+      transparent 0 28px,
+      var(--rule) 28px 29px
+    );
+    border: 1px solid var(--card-line);
+    border-radius: 10px;
+  }
+  h2 {
+    font-family: var(--mono);
+    font-size: 1.02rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ink-blue);
+    border-bottom: 1px dashed hsla(213, 45%, 45%, 0.35);
+    padding-bottom: 8px;
+    margin-top: 0;
+  }
+  h3 {
+    font-family: var(--mono);
+    font-size: 0.92rem;
+    color: var(--amber);
+    margin: 22px 0 8px;
+  }
+  p { margin: 11px 0; }
+  ul, ol { padding-left: 23px; }
+  li { margin: 7px 0; }
+  code, pre { font-family: var(--mono); }
+  code {
+    color: hsl(168, 58%, 67%);
+    background: hsla(168, 60%, 40%, 0.08);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  pre {
+    overflow-x: auto;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid hsla(213, 45%, 45%, 0.24);
+    background: hsla(222, 48%, 3%, 0.72);
+    color: hsl(40, 20%, 86%);
+    line-height: 1.52;
+    font-size: 0.86rem;
+  }
+  .chart { overflow-x: auto; margin: 16px 0 6px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 0.86rem;
+  }
+  th, td {
+    border: 1px solid hsla(213, 45%, 45%, 0.22);
+    padding: 8px 11px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { color: var(--amber); font-weight: 600; }
+  td { color: var(--bone); }
+  .default-row td { background: hsla(168, 60%, 40%, 0.055); }
+  .flow {
+    margin: 18px 0 4px;
+    display: grid;
+    gap: 10px;
+  }
+  .flow-row {
+    display: grid;
+    grid-template-columns: 1fr 34px 1fr 34px 1fr;
+    align-items: center;
+    gap: 6px;
+  }
+  .node {
+    min-height: 76px;
+    padding: 12px 13px;
+    border-radius: 8px;
+    border: 1px solid hsla(213, 45%, 45%, 0.30);
+    background: hsla(222, 42%, 9%, 0.85);
+  }
+  .node b {
+    display: block;
+    font-family: var(--mono);
+    color: var(--ink-blue);
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+  }
+  .node.local b { color: hsl(168, 58%, 65%); }
+  .node.human b { color: var(--amber); }
+  .arrow {
+    text-align: center;
+    color: var(--bone-dim);
+    font-family: var(--mono);
+    font-size: 1.2rem;
+  }
+  .modes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 17px 0;
+  }
+  .mode {
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px solid hsla(213, 45%, 45%, 0.28);
+    background: hsla(222, 42%, 9%, 0.82);
+  }
+  .mode.fast {
+    border-color: hsla(168, 60%, 45%, 0.35);
+    background: hsla(168, 60%, 40%, 0.055);
+  }
+  .mode.deliberate {
+    border-color: hsla(267, 55%, 70%, 0.30);
+    background: hsla(267, 40%, 40%, 0.055);
+  }
+  .mode h3 { margin-top: 0; }
+  .mode.fast h3 { color: var(--verdigris); }
+  .mode.deliberate h3 { color: var(--purple); }
+  .mode .tag {
+    display: inline-block;
+    font: 0.73rem var(--mono);
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    border: 1px solid hsla(213, 45%, 45%, 0.30);
+    color: var(--bone-dim);
+  }
+  .note {
+    font-style: italic;
+    font-size: 0.9rem;
+    color: hsla(213, 50%, 70%, 0.82);
+  }
+  .callout {
+    border-left: 3px solid var(--ink-red);
+    padding: 8px 14px;
+    margin: 15px 0;
+    background: hsla(354, 62%, 40%, 0.07);
+    color: var(--bone-dim);
+  }
+  .callout.green {
+    border-left-color: var(--verdigris);
+    background: hsla(168, 60%, 40%, 0.065);
+  }
+  .checklist {
+    columns: 2 280px;
+    column-gap: 30px;
+  }
+  .checklist li { break-inside: avoid; }
+  .footer {
+    margin-top: 36px;
+    padding: 18px 20px;
+    border: 1px solid hsla(168, 60%, 45%, 0.25);
+    border-radius: 10px;
+    background: hsla(168, 60%, 40%, 0.06);
+    color: var(--bone-dim);
+  }
+  .footer strong {
+    color: var(--verdigris);
+    font-family: var(--mono);
+  }
+  @media (max-width: 760px) {
+    main { padding: 34px 12px 70px; }
+    section.page { padding: 20px 16px; }
+    header h1 { font-size: 1.5rem; }
+    .flow-row { grid-template-columns: 1fr; }
+    .arrow { transform: rotate(90deg); }
+    .checklist { columns: 1; }
+    .principles, .modes { grid-template-columns: 1fr; }
+    th, td { padding: 6px 8px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="ink"></canvas>
+<main>
+  <header>
+    <h1>AI Development Workflow</h1>
+    <p class="sub">V1.1 &middot; refined operating system for AI-assisted software development</p>
+    <p class="summary">
+      V1.1 preserves the repository-centered architecture of V1 while removing unnecessary ceremony.
+      Project state remains durable and tool-independent, but contained tasks may now use a single-agent
+      Fast Path when a planner-to-builder handoff would add friction without adding meaningful value.
+      P0 hardens operational reliability with evidence authority, stable STATE discipline, atomic
+      Next Actions, and an explicit Operator safety contract — without adding any new machinery.
+    </p>
+    <div class="principles">
+      <div class="principle">
+        <strong>CORE PRINCIPLE</strong><br>
+        Stop making AI conversations the home of the project. Make the repository the home of the project.
+      </div>
+      <div class="principle">
+        <strong>SEAM PRINCIPLE</strong><br>
+        Reduce handoffs when the handoff adds no value. Preserve them when planning, risk, or review benefits from separation.
+      </div>
+    </div>
+  </header>
+
+  <section class="page">
+    <h2>01 — The Working Environment</h2>
+    <p>
+      The toolset stays flexible, but the default daily workflow becomes intentionally small. ChatGPT Plus
+      is the primary deep-reasoning and planning surface; OpenCode is the default free local builder.
+      Other tools remain available when they provide a specific advantage.
+    </p>
+
+    <div class="chart">
+      <table>
+        <thead>
+          <tr><th>Tool / Surface</th><th>Primary Role</th><th>Default Rule</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Notebook + pen</td><td>Original thinking, sketching, feature ideas, rough architecture</td><td>Keep it. This remains a main ingredient.</td></tr>
+          <tr><td>Handy</td><td>Fast speech-to-text capture while moving or coding</td><td>Short bugs/features may go directly to INBOX.md or the current agent.</td></tr>
+          <tr><td>Qwen Studio</td><td>Handwritten-note transcription and low-cost second opinions</td><td>Use especially when notebook transcription is needed.</td></tr>
+          <tr class="default-row"><td>ChatGPT Plus</td><td>Primary project brain: planning, architecture, hard reasoning, final review</td><td>Default reasoning/control surface.</td></tr>
+          <tr class="default-row"><td>OpenCode</td><td>Default free local implementation agent; Fast Path planner-builder when appropriate</td><td>First choice for routine build work.</td></tr>
+          <tr><td>Codex</td><td>Higher-value implementation, debugging, repository work</td><td>Use where stronger execution is worth the available usage.</td></tr>
+          <tr><td>Claude / Qianwen</td><td>Alternative reasoning or independent review</td><td>Use deliberately, not automatically.</td></tr>
+          <tr><td>T3 Code / Cursor</td><td>Interactive code editing and debugging</td><td>Open only when their interface is useful for the current task.</td></tr>
+          <tr><td>PowerShell / WSL</td><td>Local execution environment</td><td>Prefer WSL for repo-centered development where appropriate.</td></tr>
+          <tr><td>tmux + herdr</td><td>Persistent multi-terminal project workspace</td><td>One tmux session per active project.</td></tr>
+          <tr><td>Browser</td><td>Research, docs, GitHub, AI web surfaces, YouTube</td><td>Temporary working memory — not permanent project memory.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout green">
+      <strong>Default daily pair:</strong> ChatGPT + OpenCode. Qwen, Codex, Claude, T3 Code, Cursor, and Qianwen
+      are not removed; they become purposeful alternatives rather than automatic background clutter.
+    </div>
+  </section>
+
+  <section class="page">
+    <h2>02 — The Repository Is the Source of Truth</h2>
+    <p>
+      Every active project uses the same durable AI state area. V1.1 deliberately keeps the five-file model
+      from V1 rather than collapsing project memory into one large PLAN.md.
+    </p>
+
+<pre>docs/ai/
+├── PROJECT.md
+├── STATE.md
+├── DECISIONS.md
+├── REFERENCES.md
+└── INBOX.md</pre>
+
+    <h3>PROJECT.md</h3>
+    <p>
+      The stable explanation of the project: purpose, architecture, tech stack, important constraints,
+      repository conventions, supported platforms, and major goals.
+    </p>
+
+    <h3>STATE.md</h3>
+    <p>
+      The current truth: what is finished, what is in progress, blockers, current branch or milestone,
+      verification status, and the single recommended next action. It opens with a concise Operating Rules
+      block stating evidence authority, atomic Next Action, and the Fast/Deliberate definitions.
+    </p>
+
+    <h3>DECISIONS.md</h3>
+    <p>
+      Records decisions that should not be repeatedly reopened: architecture choices, intentionally
+      rejected approaches, compatibility decisions, accepted tradeoffs, and important design rationale.
+    </p>
+
+    <h3>REFERENCES.md</h3>
+    <p>
+      Durable links that would otherwise remain open forever in browser tabs: documentation, GitHub issues,
+      videos, papers, libraries, examples, and research sources — each with a short note explaining why it matters.
+    </p>
+
+    <h3>INBOX.md</h3>
+    <p>
+      Unprocessed ideas from notebook transcription, Handy dictation, browser research, or sudden thoughts.
+      The inbox is allowed to be messy. The other files are not.
+    </p>
+
+    <p class="note">
+      Different information changes at different speeds. Keeping project identity, current state, decisions,
+      references, and unprocessed ideas separate prevents one giant memory file from becoming another source of clutter.
+    </p>
+  </section>
+
+  <section class="page">
+    <h2>03 — Choose the Lightest Correct Execution Path</h2>
+    <p>
+      The V1.1 workflow does not require a formal planner-to-builder handoff for every task. Before starting,
+      classify the work. Use the lightest path that still protects correctness and project clarity.
+    </p>
+
+    <div class="modes">
+      <div class="mode fast">
+        <span class="tag">MODE A</span>
+        <h3>Fast Path</h3>
+        <p><strong>Use when:</strong> the task is contained, well understood, low-risk, and easy to verify.</p>
+        <ul>
+          <li>Small bug fixes</li>
+          <li>Minor UI changes</li>
+          <li>Contained refactors</li>
+          <li>Simple feature additions with clear acceptance criteria</li>
+          <li>Routine maintenance</li>
+        </ul>
+<pre>Idea / bug
+   ↓
+OpenCode / Codex
+   ↓
+Brief plan in-session
+   ↓
+Build
+   ↓
+Verify
+   ↓
+Update STATE.md
+   ↓
+Commit / next action</pre>
+      </div>
+
+      <div class="mode deliberate">
+        <span class="tag">MODE B</span>
+        <h3>Deliberate Path</h3>
+        <p><strong>Use when:</strong> architecture, ambiguity, risk, cross-cutting changes, or independent review justify separation.</p>
+        <ul>
+          <li>New applications or major features</li>
+          <li>Architecture changes</li>
+          <li>Security- or data-sensitive work</li>
+          <li>Unfamiliar codebases</li>
+          <li>Large multi-file changes</li>
+          <li>Work where a second perspective materially helps</li>
+        </ul>
+<pre>Capture / INBOX
+   ↓
+ChatGPT planning
+   ↓
+Durable repo state
+   ↓
+OpenCode / Codex build
+   ↓
+Independent review
+   ↓
+Fix if needed
+   ↓
+Commit / next action</pre>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Escalation rule:</strong> a Fast Path task may become a Deliberate Path task at any time.
+      If the builder discovers unclear architecture, hidden dependencies, repeated verification failure,
+      or a decision with long-term consequences, stop and elevate the task rather than improvising through it.
+    </div>
+  </section>
+
+  <section class="page">
+    <h2>04 — Capture Without Creating Ceremony</h2>
+    <p>
+      Notebook + pen remains a core part of the workflow. V1.1 adds a shortcut so every thought does not have
+      to travel through the full paper → transcription → planning chain.
+    </p>
+
+    <div class="chart">
+      <table>
+        <thead>
+          <tr><th>What You Have</th><th>Best Capture Route</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Large/formative idea</td><td>Notebook → Qwen Studio → INBOX.md → planning</td><td>Preserves the natural paper-first thinking process.</td></tr>
+          <tr><td>Quick thought or small feature</td><td>Handy → INBOX.md</td><td>Capture it immediately without interrupting current work.</td></tr>
+          <tr><td>Immediate bug while actively coding</td><td>Handy → current OpenCode/Codex session</td><td>The active builder already has the relevant code context.</td></tr>
+          <tr><td>Research discovery worth keeping</td><td>Browser → REFERENCES.md</td><td>Turns a temporary tab into durable project context.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note">
+      Paper is not demoted. The new shortcut only prevents small items from being forced through a heavyweight process.
+    </p>
+  </section>
+
+  <section class="page">
+    <h2>05 — The Deliberate Planner → Builder Contract</h2>
+    <p>
+      When the Deliberate Path is justified, the handoff remains structured and repository-centered.
+      This is where separation adds value rather than friction.
+    </p>
+
+<pre>GOAL
+What needs to change.
+
+CURRENT STATE
+Read docs/ai/PROJECT.md and docs/ai/STATE.md.
+
+SCOPE
+What may be changed.
+
+CONSTRAINTS
+What must not change.
+
+ACCEPTANCE CRITERIA
+How we know the task is finished.
+
+VERIFICATION
+Tests, builds, checks, or manual validation that must be run.
+
+RETURN
+- Files changed
+- Tests/checks run
+- Problems encountered
+- Decisions made
+- Remaining risks
+- Recommended next step
+- Update docs/ai/STATE.md</pre>
+
+    <div class="callout">
+      The human should not be the transport layer for project memory. A small task instruction is fine.
+      Repeatedly copying whole conversations between agents is a workflow smell.
+    </div>
+  </section>
+
+  <section class="page">
+    <h2>06 — tmux, herdr, PowerShell, and WSL</h2>
+    <p>
+      The terminal setup stays project-oriented. Each active repository receives one tmux session with the same
+      predictable structure so project identity is visible immediately.
+    </p>
+
+<pre>omnilens
+├── 1: agent
+├── 2: test
+├── 3: git
+└── 4: logs
+
+grep-explorer
+├── 1: agent
+├── 2: test
+├── 3: git
+└── 4: logs</pre>
+
+    <p>
+      herdr manages the multi-terminal environment; the repository owns project knowledge; tmux owns the active
+      terminal workspace. A Fast Path task can happen entirely inside the agent window while test/git/log windows
+      remain available without creating new ad-hoc terminals.
+    </p>
+
+<pre>tmux attach -t omnilens
+# read STATE.md
+# check git status
+# choose Fast Path or Deliberate Path
+# continue the next action</pre>
+  </section>
+
+  <section class="page">
+    <h2>07 — Browser Discipline</h2>
+    <p>
+      Browsers remain essential, but their job is research and temporary context. They should not serve as a
+      long-term storage system for project knowledge.
+    </p>
+
+    <ol>
+      <li>Keep one browser group per active project.</li>
+      <li>Keep general-purpose tabs separate from project-specific tabs.</li>
+      <li>When a page becomes important, add it to <code>REFERENCES.md</code> with a one-line explanation.</li>
+      <li>Close research tabs once their value has been captured.</li>
+      <li>Do not keep an AI chat open merely because it contains information that has not been written into the repo yet.</li>
+      <li>Optionally use a dedicated AI/research browser profile if that separation genuinely reduces clutter.</li>
+    </ol>
+
+    <p class="note">
+      Browser tabs are RAM. REFERENCES.md is storage. A dedicated profile is an optional convenience, not a workflow dependency.
+    </p>
+  </section>
+
+  <section class="page">
+    <h2>08 — Project Switching and Work-in-Progress Limits</h2>
+    <p>
+      Working on several applications is possible, but only a small number should be considered active at the same time.
+      V1.1 keeps the V1 rule: <strong>no more than two active development projects at once.</strong>
+    </p>
+
+    <h3>Before Leaving a Project</h3>
+<pre>1. Update STATE.md
+2. Record the single NEXT ACTION
+3. Run/record the latest verification state
+4. Commit completed work or clearly mark unfinished work
+5. Save important browser references
+6. Detach the tmux session
+7. Close the project browser group</pre>
+
+    <h3>When Returning</h3>
+<pre>1. Attach the project's tmux session
+2. Open the project browser group if needed
+3. Read PROJECT.md + STATE.md
+4. Check git status / current branch
+5. Classify the next task: Fast Path or Deliberate Path
+6. Continue the recorded NEXT ACTION</pre>
+  </section>
+
+  <section class="page">
+    <h2>09 — Free-Tier Strategy and Tool Escalation</h2>
+    <p>
+      Route work by cost, difficulty, and required reasoning. The default stack should be small; stronger or alternative
+      tools are brought in because the task justifies them, not because they happen to be installed.
+    </p>
+
+    <div class="chart">
+      <table>
+        <thead>
+          <tr><th>Type of Work</th><th>Preferred First Choice</th><th>Escalate When...</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Notebook transcription</td><td>Qwen Studio</td><td>The transcription is unclear or structurally complex.</td></tr>
+          <tr><td>Small/contained implementation</td><td>OpenCode Fast Path</td><td>The task reveals architecture, ambiguity, or repeated verification failure.</td></tr>
+          <tr><td>Routine implementation</td><td>OpenCode + free-capable model</td><td>The task needs stronger execution or debugging.</td></tr>
+          <tr><td>Architecture / major project planning</td><td>ChatGPT Plus</td><td>A strong second opinion is materially useful.</td></tr>
+          <tr><td>Independent review</td><td>Qwen / Claude / ChatGPT</td><td>The change is high-risk or reviewers disagree.</td></tr>
+          <tr><td>Difficult repo edits/debugging</td><td>Codex or strongest appropriate local agent</td><td>Use after the task is clearly scoped.</td></tr>
+          <tr><td>Research</td><td>Browser + free search/AI tools</td><td>The information requires deeper synthesis or verification.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Because project knowledge lives in the repository, the model can change without the project changing.
+      ChatGPT + OpenCode is the default pair, not a lock-in.
+    </p>
+  </section>
+
+  <section class="page">
+    <h2>10 — The Daily V1.1 Loop</h2>
+
+<pre>START
+  ↓
+Choose ONE active project
+  ↓
+Attach project tmux session
+  ↓
+Read STATE.md + check git status
+  ↓
+Capture anything new
+  ↓
+Classify next task
+  ├────────────── FAST PATH ──────────────┐
+  │                                      │
+  │  OpenCode / Codex                    │
+  │      ↓                               │
+  │  brief in-session plan               │
+  │      ↓                               │
+  │  build + verify                      │
+  │      ↓                               │
+  │  update STATE.md                     │
+  │                                      │
+  └───────────────┬──────────────────────┘
+                  │
+                  │
+  ┌────────── DELIBERATE PATH ───────────┐
+  │                                      │
+  │  ChatGPT planning                    │
+  │      ↓                               │
+  │  durable repo state / scoped handoff │
+  │      ↓                               │
+  │  OpenCode / Codex build + verify     │
+  │      ↓                               │
+  │  independent review when justified  │
+  │                                      │
+  └───────────────┬──────────────────────┘
+                  ↓
+PASS?
+  ├── no → focused fix / escalate path if needed
+  └── yes
+       ↓
+Commit / record decisions / record NEXT ACTION
+       ↓
+Continue or perform shutdown ritual</pre>
+
+    <h3>Default Rule for Every Session</h3>
+    <p>
+      One project. One next task. The lightest correct execution path. One source of durable truth.
+    </p>
+  </section>
+
+  <section class="page">
+    <h2>11 — Evidence Authority, State Discipline, and the Operator Contract</h2>
+    <p>
+      P0 hardens the V1.1 workflow for operational reliability without adding machinery: no daemon, database,
+      service, or orchestration layer. Repository evidence itself becomes the referee when documentation and
+      execution disagree.
+    </p>
+
+    <h3>Evidence hierarchy</h3>
+    <p>
+      When repository, Git, remote, CI, test, or other authoritative execution evidence conflicts with stale
+      <code>STATE.md</code> content, verified evidence wins. The mismatch must still be reported, and
+      <code>STATE.md</code> may be corrected during an appropriate bounded state/work update. There is no automatic correction loop;
+      mismatches are reported rather than chased with self-invalidating commits.
+    </p>
+
+    <h3>Stable STATE discipline</h3>
+    <p>
+      Do not create a STATE-only commit merely to chase metadata changed by the previous STATE commit.
+      A STATE-only commit may be appropriate at a meaningful project or handoff boundary when it records
+      stable operational truth that remains true after the commit. Prefer durable facts over self-invalidating
+      details such as exact current HEAD hashes. <code>STATE.md</code> must not become a workflow manual.
+    </p>
+
+    <h3>Atomic Next Action</h3>
+    <p>
+      Exactly ONE Next Action. An atomic Next Action represents one operation/outcome, with one independently
+      verifiable completion state, and never bundles separate lifecycle operations with "and".
+    </p>
+    <div class="chart">
+      <table>
+        <thead>
+          <tr><th>Atomic</th><th>Compound (not allowed)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Push branch to origin.</td><td>Push branch and open a PR.</td></tr>
+          <tr><td>Open PR to main.</td><td>Fix dependencies and run the complete validation suite.</td></tr>
+          <tr><td>Inspect the failing CI job.</td><td>Review, fix, commit, and merge.</td></tr>
+          <tr><td>Repair the local Node environment.</td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Remaining work stays in planning context, Blockers / Risks, or INBOX &mdash; never bundled into the Next Action.
+    </p>
+
+    <h3>Roles: Human, Planner/Reviewer, Operator</h3>
+    <p>
+      Roles are tool-agnostic; none is bound to any named AI product or model.
+    </p>
+    <div class="chart">
+      <table>
+        <thead>
+          <tr><th>Role</th><th>Responsibility</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>HUMAN</td><td>Chooses goals, sets priorities, approves meaningful decisions.</td></tr>
+          <tr><td>PLANNER / REVIEWER</td><td>Reasons about architecture and scope, reviews repository evidence, identifies consequential decisions.</td></tr>
+          <tr><td>OPERATOR</td><td>Runs repository/terminal commands, reads repository evidence, performs bounded edits, runs verification, reviews actual diffs, reports evidence, updates durable state when appropriate.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The Operator may be the same agent as the builder during a Fast Path task.</p>
+
+    <h3>Operator safety boundary</h3>
+    <p>
+      Bounded normal operations &mdash; read-only Git inspection, reading files, bounded edits, running
+      tests/builds/checks, reviewed staging, and ordinary commits or feature-branch pushes when explicitly
+      in task scope &mdash; need no extra authorization. Explicit authorization is required for destructive operations:
+    </p>
+    <ul>
+      <li><code>git reset --hard</code> / <code>git clean</code></li>
+      <li>Force push, branch deletion, history rewriting</li>
+      <li>Global Git configuration changes</li>
+      <li>Discarding unexplained changes; destructive broad file deletion</li>
+      <li>Bypassing failed validation</li>
+    </ul>
+    <div class="callout">
+      The Operator must STOP and report unexpected repository state rather than improvising through it.
+      Authorization is not granted automatically merely because a destructive operation might solve the
+      immediate problem.
+    </div>
+
+    <h3>Strengthened resume behavior</h3>
+    <p>
+      Resuming must work days later with only the repository. Read <code>PROJECT.md</code> and
+      <code>STATE.md</code>, inspect current repository evidence, decide whether <code>STATE.md</code> is current
+      or stale, treat verified evidence as authoritative, and report mismatches. Do not create a STATE-only
+      correction commit merely because STATE describes an operation evidence shows is already complete.
+      Identify exactly ONE atomic Next Action and classify it as Fast Path or Deliberate Path.
+    </p>
+  </section>
+
+  <section class="page">
+    <h2>12 — V1.1 Adoption Checklist</h2>
+    <ul class="checklist">
+      <li>Create <code>docs/ai/</code> in each active repository.</li>
+      <li>Add PROJECT.md.</li>
+      <li>Add STATE.md.</li>
+      <li>Add DECISIONS.md.</li>
+      <li>Add REFERENCES.md.</li>
+      <li>Add INBOX.md.</li>
+      <li>Use ChatGPT + OpenCode as the default daily pair.</li>
+      <li>Classify tasks as Fast Path or Deliberate Path.</li>
+      <li>Escalate Fast Path tasks when hidden complexity appears.</li>
+      <li>Use the standard builder handoff only when separation adds value.</li>
+      <li>Require builders to update STATE.md.</li>
+      <li>Keep the concise Operating Rules block in STATE.md.</li>
+      <li>Report evidence-vs-state mismatches; verified evidence wins.</li>
+      <li>Record exactly one atomic Next Action.</li>
+      <li>Require explicit authorization for destructive Git operations.</li>
+      <li>Use one tmux session per active project.</li>
+      <li>Standardize tmux window names.</li>
+      <li>Limit active development projects to two.</li>
+      <li>Use one browser group per active project.</li>
+      <li>Move durable research links into REFERENCES.md.</li>
+      <li>Use Notebook for formative thinking.</li>
+      <li>Use Handy as the shortcut for quick thoughts and in-session bugs.</li>
+      <li>Prefer OpenCode/free tools for routine work.</li>
+      <li>Spend ChatGPT/Codex capacity where stronger reasoning matters.</li>
+      <li>Review actual diffs and test results, not only agent summaries.</li>
+      <li>Always record the next action before leaving a project.</li>
+    </ul>
+  </section>
+
+  <div class="footer">
+    <strong>V1.1 OUTCOME</strong><br>
+    V1.1 keeps the durability of V1 while reducing unnecessary handoffs. The repository remains the project memory.
+    Notebook and Handy capture thoughts at the appropriate level of effort. ChatGPT handles deep planning when it is
+    actually useful. OpenCode handles routine local work and can plan + build contained tasks in one session.
+    Review remains available when risk justifies it. The workflow becomes lighter without becoming looser.
+  </div>
+</main>
+
+<script>
+(() => {
+'use strict';
+
+// CONFIGURATION
+const CONFIG = {
+  background: { hue: 222, sat: 32, light: 5 },  // charred indigo night desk
+  trailFade: 0.10,
+  primary:   { hue: 213, sat: 50, light: 62 },  // faded blue ink
+  secondary: { hue: 354, sat: 62, light: 58 },  // red ink flecks
+  secondaryRatio: 0.12,
+  density: 0.00025,                             // motes per css px^2
+  minParticles: 220,
+  maxParticles: 900,
+  drift: 0.35,                                  // target speed px/frame
+  viscosity: 0.045,                             // easing toward flow field
+  jitter: 0.15,
+  safeZone: { radius: 0.40, ramp: 0.55, floor: 0.05 }, // keep reading column dark
+  size: [0.8, 2.2],
+  twinkle: [0.4, 1.4],
+  flow: { s1: 0.0016, s2: 0.0013, s3: 0.0008, t1: 0.11, t2: 0.07, t3: 0.05 }
+};
+
+const canvas = document.getElementById('ink');
+const ctx = canvas.getContext('2d');
+
+let W = 0, H = 0, DPR = 1;
+let motes = [];
+let raf = 0;
+let last = performance.now();
+const t0 = last;
+
+function makeSprite(c) {
+  const r = 32;
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = r * 2;
+  const g = cv.getContext('2d');
+  const grad = g.createRadialGradient(r, r, 0, r, r, r);
+  grad.addColorStop(0, 'hsla(' + c.hue + ',' + c.sat + '%,' + Math.min(c.light + 16, 90) + '%,0.85)');
+  grad.addColorStop(0.35, 'hsla(' + c.hue + ',' + c.sat + '%,' + c.light + '%,0.4)');
+  grad.addColorStop(1, 'hsla(' + c.hue + ',' + c.sat + '%,' + c.light + '%,0)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, r * 2, r * 2);
+  return cv;
+}
+
+const spriteP = makeSprite(CONFIG.primary);
+const spriteS = makeSprite(CONFIG.secondary);
+
+function resize() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = Math.round(W * DPR);
+  canvas.height = Math.round(H * DPR);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = 'hsl(' + CONFIG.background.hue + ',' + CONFIG.background.sat + '%,' + CONFIG.background.light + '%)';
+  ctx.fillRect(0, 0, W, H);
+  seed();
+}
+
+function seed() {
+  const target = Math.round(Math.max(CONFIG.minParticles,
+    Math.min(CONFIG.maxParticles, W * H * CONFIG.density)));
+  motes = [];
+  for (let i = 0; i < target; i++) motes.push(spawn());
+}
+
+function spawn() {
+  return {
+    x: Math.random() * W,
+    y: Math.random() * H,
+    vx: 0,
+    vy: 0,
+    s: CONFIG.size[0] + Math.random() * (CONFIG.size[1] - CONFIG.size[0]),
+    red: Math.random() < CONFIG.secondaryRatio,
+    ph: Math.random() * Math.PI * 2,
+    tw: CONFIG.twinkle[0] + Math.random() * (CONFIG.twinkle[1] - CONFIG.twinkle[0])
+  };
+}
+
+// Radial gate: dark/subtle inside the reading column, luminous at the edges.
+function edgeWeight(x, y) {
+  const dx = (x - W / 2) / (W / 2);
+  const dy = (y - H / 2) / (H / 2);
+  const r = Math.hypot(dx, dy);
+  let t = (r - CONFIG.safeZone.radius) / CONFIG.safeZone.ramp;
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  const sm = t * t * (3 - 2 * t);
+  return CONFIG.safeZone.floor + (1 - CONFIG.safeZone.floor) * sm;
+}
+
+// Viscous ink motes easing toward a time-varying sine flow field.
+function flowAngle(x, y, t) {
+  const f = CONFIG.flow;
+  return Math.PI * (Math.sin(x * f.s1 + t * f.t1) +
+                    Math.cos(y * f.s2 - t * f.t2) +
+                    Math.sin((x + y) * f.s3 + t * f.t3));
+}
+
+function stepMote(p, dt, t) {
+  const f = dt * 60;
+  const th = flowAngle(p.x, p.y, t);
+  const txv = Math.cos(th) * CONFIG.drift;
+  const tyv = Math.sin(th) * CONFIG.drift;
+  const ease = 1 - Math.pow(1 - CONFIG.viscosity, f);
+  p.vx += (txv - p.vx) * ease;
+  p.vy += (tyv - p.vy) * ease;
+  p.x += p.vx * f + (Math.random() - 0.5) * CONFIG.jitter;
+  p.y += p.vy * f + (Math.random() - 0.5) * CONFIG.jitter;
+  const m = 24;
+  if (p.x < -m) p.x = W + m; else if (p.x > W + m) p.x = -m;
+  if (p.y < -m) p.y = H + m; else if (p.y > H + m) p.y = -m;
+}
+
+function drawMote(p, t) {
+  const w = edgeWeight(p.x, p.y);
+  const twk = 0.5 + 0.5 * Math.sin(t * p.tw + p.ph);
+  ctx.globalAlpha = w * (0.2 + 0.8 * twk);
+  const d = p.s * 7 * (0.8 + 0.5 * twk) * (p.red ? 1.2 : 1);
+  ctx.drawImage(p.red ? spriteS : spriteP, p.x - d / 2, p.y - d / 2, d, d);
+}
+
+function frame(now) {
+  raf = requestAnimationFrame(frame);
+  const dt = Math.min(0.05, (now - last) / 1000);
+  last = now;
+  const t = (now - t0) / 1000;
+
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = 'hsla(' + CONFIG.background.hue + ',' + CONFIG.background.sat + '%,' + CONFIG.background.light + '%,' + CONFIG.trailFade + ')';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < motes.length; i++) {
+    stepMote(motes[i], dt, t);
+    drawMote(motes[i], t);
+  }
+  ctx.globalAlpha = 1;
+}
+
+// Power saving: pause entirely while hidden, resume when visible.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+  } else if (!raf) {
+    last = performance.now();
+    raf = requestAnimationFrame(frame);
+  }
+});
+
+window.addEventListener('resize', resize);
+
+resize();
+raf = requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
