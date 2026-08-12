@@ -1,6 +1,8 @@
-# AI Development Workflow V1.1 — Project Kit
+# AI Development Workflow V1.2 — Project Kit
 
-This kit turns the V1.1 workflow into reusable repository files and small local helpers. It intentionally does **not** become a workflow manager. Markdown owns durable state; Git owns code history; your AI tools remain interchangeable.
+This kit turns the V1.2 workflow into reusable repository files and small local helpers. It intentionally does **not** become a workflow manager. Markdown owns durable state; Git owns code history; your AI tools remain interchangeable.
+
+The current V1.2 reference is `reference/ai-development-workflow-v1.2.html`.
 
 ## What This Kit Establishes
 
@@ -17,7 +19,7 @@ This kit turns the V1.1 workflow into reusable repository files and small local 
 ## Kit Layout
 
 ```text
-ai-development-workflow-project-kit-v1.1/
+ai-development-workflow-project-kit-v1.2/
 ├── README.md
 ├── VERSION
 ├── templates/docs/ai/
@@ -62,7 +64,7 @@ Existing `docs/ai/*.md` files are preserved. To intentionally replace them with 
 & "C:\path\to\project-kit\scripts\init-ai-workflow.ps1" "C:\path\to\your\repo"
 ```
 
-Use `-Force` only when you intentionally want to replace existing V1.1 state files.
+Use `-Force` only when you intentionally want to replace existing workflow state files.
 
 On every run, the initializer reports per-file `write` or `preserve` actions, then prints one final `ready` line for the `docs/ai/` directory. Reruns preserve existing files by default and summarize written/preserved counts; use `--force` / `-Force` only for intentional replacement.
 
