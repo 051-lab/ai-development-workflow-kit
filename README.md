@@ -62,7 +62,13 @@ Existing `docs/ai/*.md` files are preserved. To intentionally replace them with 
 
 Use `-Force` only when you intentionally want to replace existing V1.1 state files.
 
-## 2. Fill the Durable State Once
+On every run, the initializer reports per-file `write` or `preserve` actions, then prints one final `ready` line for the `docs/ai/` directory. Reruns preserve existing files by default and summarize written/preserved counts; use `--force` / `-Force` only for intentional replacement.
+
+### Windows / Git / EOL diagnosis
+
+If a tracked file appears unexpectedly modified on Windows, diagnose before cleanup. Inspect `git status --short`, focused `git diff -- <path>` / `git diff --cached -- <path>`, `git ls-files --eol -- <path>`, and `git check-attr -a -- <path>`. Compare `git hash-object --path=<path> <path>` with `git rev-parse HEAD:<path>`: matching hashes strongly indicate equivalent stored content after applicable clean/EOL handling, but do not authorize discarding changes or changing configuration. `git update-index --refresh` and `git status` are non-destructive follow-up checks. Do not casually change `git config --global core.autocrlf`; global configuration requires explicit authorization. A repository-local `.gitattributes` may be appropriate only when the project chooses a policy based on platforms, generated files, tools, and existing conventions. Preserve unexplained changes and obtain authorization before destructive restoration. See the reference workflow for the fuller playbook.
+
+
 
 Start with `PROJECT.md`. Record verified architecture, stack, constraints, supported environments, and authoritative verification commands.
 
@@ -98,7 +104,9 @@ If hidden architecture, ambiguity, repeated failures, or consequential decisions
 ### Deliberate Path
 Use `prompts/DELIBERATE-PLANNER.md` with ChatGPT for deeper planning. Turn the result into the contract in `prompts/DELIBERATE-BUILDER.md`, then give that scoped handoff to OpenCode, Codex, or the chosen builder.
 
-Use `prompts/REVIEW.md` when independent review materially improves confidence.
+Use `prompts/REVIEW.md` for independent review based on the actual diff, acceptance criteria, recorded constraints/decisions, verification evidence, and authoritative repository state. It checks stale STATE reconciliation, one atomic Next Action, and stable STATE discipline without inventing unsupported failures.
+
+
 
 ## 5. Capture Routing
 
@@ -136,7 +144,7 @@ Before switching projects:
 4. Resolve any mismatch between repository evidence and `STATE.md`.
 5. Choose Fast Path or Deliberate Path for the recorded Next Action.
 
-`prompts/RESUME-PROJECT.md` can delegate this startup assessment to an agent.
+See `prompts/RESUME-PROJECT.md` for the full evidence-first resume sequence. Report stale STATE claims, trust verified repository evidence, and correct state only during an appropriate bounded update.
 
 ## Pilot Rule
 

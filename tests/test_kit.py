@@ -145,6 +145,8 @@ class KitContractTests(unittest.TestCase):
             "Atomic Next Action",
             "Roles: Human, Planner/Reviewer, Operator",
             "Operator safety boundary",
+            "Independent review",
+            "Strengthened resume behavior",
             "Strengthened resume behavior",
             "There is no automatic correction loop",
             "one independently verifiable completion state",
@@ -152,7 +154,33 @@ class KitContractTests(unittest.TestCase):
         ]:
             self.assertIn(term, text)
 
-    def test_sample_state_preserves_five_file_operating_contract(self):
+    def test_review_prompt_requires_p1_evidence_contract(self):
+        text = (PROMPTS / "REVIEW.md").read_text(encoding="utf-8")
+        for term in [
+            "actual diff", "acceptance criteria", "verified repository/Git/remote/CI/test evidence",
+            "stale STATE claims", "atomic operation", "independently verifiable completion state",
+            "metadata-chasing commits", "material", "Do not invent failures",
+            "PASS", "PASS WITH FOLLOW-UP", "FIX REQUIRED",
+        ]:
+            self.assertIn(term, text)
+        self.assertIn("routine stale-state mismatch", text)
+        self.assertIn("does not automatically require", text)
+
+    def test_eol_diagnostic_guidance_is_evidence_first(self):
+        texts = [
+            (ROOT / "README.md").read_text(encoding="utf-8"),
+            (ROOT / "reference" / "ai-development-workflow-v1.1.html").read_text(encoding="utf-8"),
+        ]
+        for text in texts:
+            self.assertIn("git hash-object --path", text)
+            self.assertIn("git rev-parse HEAD:", text)
+            self.assertIn("git config --global core.autocrlf", text)
+            self.assertIn(".gitattributes", text)
+            self.assertIn("diagnos", text.lower())
+            self.assertIn("git update-index --refresh", text)
+        self.assertIn("discarding changes", texts[0])
+
+
         text = (ROOT / "examples" / "sample-project" / "docs" / "ai" / "STATE.md").read_text(encoding="utf-8")
         for heading in [
             "Operating Rules", "Current Status", "Completed Recently", "In Progress",
@@ -177,7 +205,35 @@ class BashInitializerTests(unittest.TestCase):
             stderr=subprocess.PIPE,
         )
 
-    def test_initializer_copies_five_state_files(self):
+    def test_initializer_reports_write_preserve_and_summary(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td) / "repo"
+            repo.mkdir()
+            first = self.run_init(repo)
+            self.assertEqual(first.returncode, 0, first.stderr)
+            self.assertIn("summary   written: 5", first.stdout)
+            self.assertIn("summary   preserved: 0", first.stdout)
+            self.assertEqual(first.stdout.count("write     "), 5)
+            self.assertTrue(first.stdout.rstrip().splitlines()[-1].startswith("ready     "))
+
+            sentinel = repo / "docs" / "ai" / "STATE.md"
+            sentinel.write_text("KEEP-ME\n", encoding="utf-8")
+            rerun = self.run_init(repo)
+            self.assertEqual(rerun.returncode, 0, rerun.stderr)
+            self.assertIn("existing  workflow state detected", rerun.stdout)
+            self.assertIn("summary   written: 0", rerun.stdout)
+            self.assertIn("summary   preserved: 5", rerun.stdout)
+            self.assertIn("--force", rerun.stdout)
+            self.assertEqual(sentinel.read_text(encoding="utf-8"), "KEEP-ME\n")
+
+            forced = self.run_init(repo, "--force")
+            self.assertEqual(forced.returncode, 0, forced.stderr)
+            self.assertIn("force     replacing", forced.stdout)
+            self.assertIn("summary   written: 5", forced.stdout)
+            self.assertIn("summary   preserved: 0", forced.stdout)
+            self.assertNotEqual(sentinel.read_text(encoding="utf-8"), "KEEP-ME\n")
+
+
         with tempfile.TemporaryDirectory() as td:
             repo = Path(td) / "repo"
             repo.mkdir()
@@ -250,6 +306,13 @@ class PowerShellContractTests(unittest.TestCase):
         self.assertTrue(path.exists())
         text = path.read_text(encoding="utf-8")
         self.assertIn("[switch]$Force", text)
+        self.assertIn('$written = 0', text)
+        self.assertIn('$preserved = 0', text)
+        self.assertIn('existing  workflow state detected', text)
+        self.assertIn('summary   written:', text)
+        self.assertIn('summary   preserved:', text)
+        self.assertIn('use -Force only', text)
+        self.assertIn('force     replacing', text)
         self.assertIn("PROJECT.md", text)
         self.assertIn("STATE.md", text)
         self.assertNotIn("Invoke-WebRequest", text)
