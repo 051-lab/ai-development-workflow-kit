@@ -534,6 +534,29 @@ grep-explorer
 # check git status
 # choose Fast Path or Deliberate Path
 # continue the next action</pre>
+
+    <h3>Windows / Git / EOL diagnosis</h3>
+    <p>
+      If a tracked file appears unexpectedly modified on Windows, inspect actual Git state before cleanup:
+      <code>git status --short</code>, focused <code>git diff -- &lt;path&gt;</code> and
+      <code>git diff --cached -- &lt;path&gt;</code>, <code>git ls-files --eol -- &lt;path&gt;</code>, and
+      <code>git check-attr -a -- &lt;path&gt;</code>.
+    </p>
+    <p>
+      Compare <code>git hash-object --path=&lt;path&gt; &lt;path&gt;</code> with
+      <code>git rev-parse HEAD:&lt;path&gt;</code>. The first calculates the blob Git would store after
+      applicable clean/EOL handling; the second returns the blob stored at HEAD. Matching hashes are strong
+      evidence of equivalent stored content even when working-tree representation or status is confusing, but
+      do not authorize discarding files or changing configuration. <code>git update-index --refresh</code>
+      followed by <code>git status</code> is a non-destructive follow-up.
+    </p>
+    <div class="callout">
+      Do not casually change <code>git config --global core.autocrlf</code> or other global settings to fix one
+      file; global configuration changes require explicit authorization. A repository-local
+      <code>.gitattributes</code> may be appropriate only when the project chooses a policy based on supported
+      platforms, generated files, build/tool expectations, and existing conventions. Understand and preserve
+      unexplained changes before any destructive restoration; authorization is required before overwriting them.
+    </div>
   </section>
 
   <section class="page">
@@ -748,7 +771,18 @@ Continue or perform shutdown ritual</pre>
       immediate problem.
     </div>
 
-    <h3>Strengthened resume behavior</h3>
+    <h3>Independent review</h3>
+    <p>
+      Use <code>prompts/REVIEW.md</code> for an independent assessment grounded in the actual diff,
+      acceptance criteria, recorded constraints and decisions, and verification evidence. The reviewer
+      reconciles STATE.md against authoritative repository, Git, remote, CI, and test evidence; checks the
+      single atomic Next Action and stable STATE discipline; and reports the smallest evidence-backed correction.
+      Routine stale STATE is reported but does not automatically require <code>FIX REQUIRED</code> when scope and
+      safety remain correct. Material scope, safety, acceptance, or validation conflicts may require it. Verdicts
+      remain <code>PASS</code>, <code>PASS WITH FOLLOW-UP</code>, and <code>FIX REQUIRED</code>.
+    </p>
+
+
     <p>
       Resuming must work days later with only the repository. Read <code>PROJECT.md</code> and
       <code>STATE.md</code>, inspect current repository evidence, decide whether <code>STATE.md</code> is current
