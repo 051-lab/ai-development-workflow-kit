@@ -242,6 +242,136 @@ class KitContractTests(unittest.TestCase):
             self.assertIn("git update-index --refresh", text)
         self.assertIn("discarding changes", texts[0])
 
+    def test_global_stop_model_is_owned_by_active_safety_contracts(self):
+        operator = (PROMPTS / "OPERATOR.md").read_text(encoding="utf-8")
+        builder = (PROMPTS / "DELIBERATE-BUILDER.md").read_text(encoding="utf-8")
+        fast = (PROMPTS / "FAST-PATH.md").read_text(encoding="utf-8")
+        review = (PROMPTS / "REVIEW.md").read_text(encoding="utf-8")
+        for term in [
+            "unexplained working-tree",
+            "unexpected repository/worktree context",
+            "material scope expansion",
+            "unresolved architecture",
+            "acceptance conflict",
+            "security/data-safety",
+            "unexpected remote divergence",
+            "merge conflict",
+            "credential/secret exposure",
+            "material evidence contradicting",
+        ]:
+            self.assertIn(term, operator)
+        for term in [
+            "git reset --hard", "git clean", "force push", "branch deletion",
+            "history rewriting", "global Git configuration",
+            "discarding unexplained changes", "destructive broad file deletion",
+            "bypassing failed validation",
+        ]:
+            self.assertIn(term, operator)
+        for term in ["failed required validation", "destructive operation", "evidence contradicting the approved plan"]:
+            self.assertIn(term, builder)
+        self.assertIn("escalate safely to the Deliberate Path", fast)
+        self.assertIn("unauthorized publish/merge/destructive behavior", review)
+
+    def test_human_decision_authority_is_not_delegated(self):
+        operator = (PROMPTS / "OPERATOR.md").read_text(encoding="utf-8")
+        resume = (PROMPTS / "RESUME-PROJECT.md").read_text(encoding="utf-8")
+        sample = (ROOT / "examples" / "sample-project" / "docs" / "ai" / "STATE.md").read_text(encoding="utf-8")
+        for text in [operator, resume]:
+            for term in ["product", "architecture", "compatibility", "destructive", "release scope"]:
+                self.assertIn(term, text.lower())
+        self.assertIn("human chooses product priorities", resume)
+        self.assertIn("human still chooses the next product priority", sample.lower())
+        self.assertIn("does not select a feature autonomously", sample.lower())
+        self.assertIn("branch deletion", operator)
+
+    def test_lifecycle_authorization_is_a_ceiling_not_a_mandate(self):
+        operator = (PROMPTS / "OPERATOR.md").read_text(encoding="utf-8")
+        builder = (PROMPTS / "DELIBERATE-BUILDER.md").read_text(encoding="utf-8")
+        resume = (PROMPTS / "RESUME-PROJECT.md").read_text(encoding="utf-8")
+        for boundary in ["LOCAL IMPLEMENTATION BOUNDARY", "PR BOUNDARY", "MERGED / SYNCHRONIZED MAIN BOUNDARY"]:
+            self.assertIn(boundary, operator)
+        self.assertIn("Never advance beyond the boundary", operator)
+        self.assertIn("only when the current boundary explicitly authorizes them", operator)
+        self.assertIn("stop before merge unless merge is authorized", operator)
+        self.assertIn("Never exceed the boundary", builder)
+        self.assertIn("Do not invent merge, publish, destructive, or product authorization", resume)
+        self.assertIn("branch deletion", operator)
+
+    def test_gates_define_continuity_without_eight_handoffs(self):
+        texts = [
+            (ROOT / "README.md").read_text(encoding="utf-8"),
+            (ROOT / "reference" / "ai-development-workflow-v1.3.html").read_text(encoding="utf-8"),
+            (PROMPTS / "OPERATOR.md").read_text(encoding="utf-8"),
+        ]
+        gates = [
+            "G0 PREFLIGHT", "G1 UNDERSTAND / SCOPE", "G2 IMPLEMENT", "G3 VERIFY",
+            "G4 REVIEW", "G5 PUBLISH", "G6 CI / EXTERNAL VALIDATION",
+            "G7 MERGE / SYNCHRONIZE", "G8 DURABLE STATE / HANDOFF",
+        ]
+        for gate in gates:
+            self.assertTrue(any(gate in text for text in texts), gate)
+        self.assertIn("Routine progression continues without a human handoff", texts[0])
+        self.assertIn("not by itself a human handoff", texts[2])
+        self.assertIn("Do not stop merely because one routine lifecycle step completed", texts[2])
+
+    def test_external_gate_honesty_contract(self):
+        texts = [
+            (PROMPTS / "FAST-PATH.md").read_text(encoding="utf-8"),
+            (PROMPTS / "DELIBERATE-BUILDER.md").read_text(encoding="utf-8"),
+            (PROMPTS / "OPERATOR.md").read_text(encoding="utf-8"),
+            (PROMPTS / "RESUME-PROJECT.md").read_text(encoding="utf-8"),
+            (TEMPLATES / "STATE.md").read_text(encoding="utf-8"),
+        ]
+        for text in texts:
+            self.assertIn("PAUSED AT EXTERNAL GATE", text)
+        self.assertIn("queued/running", texts[0])
+        self.assertIn("active capable session", texts[3])
+        self.assertIn("never imply monitoring continues", texts[2])
+        self.assertNotIn("background monitoring continues", texts[0])
+
+    def test_routine_environment_recovery_stays_session_only(self):
+        operator = (PROMPTS / "OPERATOR.md").read_text(encoding="utf-8")
+        for allowed in [
+            "already-installed version manager", "already-installed project-required runtime",
+            "refresh Git stat metadata", "fetch remote metadata", "session-only correction",
+        ]:
+            self.assertIn(allowed, operator)
+        for forbidden in [
+            "installing global tools", "new runtimes", "persistent PATH",
+            "shell profiles", "changing dependencies", "global Git configuration",
+            "rewriting history",
+        ]:
+            self.assertIn(forbidden, operator)
+
+    def test_v13_scenarios_are_encoded_by_authoritative_contracts(self):
+        fast = (PROMPTS / "FAST-PATH.md").read_text(encoding="utf-8")
+        planner = (PROMPTS / "DELIBERATE-PLANNER.md").read_text(encoding="utf-8")
+        builder = (PROMPTS / "DELIBERATE-BUILDER.md").read_text(encoding="utf-8")
+        operator = (PROMPTS / "OPERATOR.md").read_text(encoding="utf-8")
+        resume = (PROMPTS / "RESUME-PROJECT.md").read_text(encoding="utf-8")
+        state = (TEMPLATES / "STATE.md").read_text(encoding="utf-8")
+        scenarios = {
+            "A": [(fast, "routine lifecycle gate"), (fast, "meaningful boundary")],
+            "B": [(planner, "MERGED / SYNCHRONIZED MAIN"), (operator, "merge/synchronization only when")],
+            "C": [(builder, "failed required validation"), (operator, "bypassing failed validation")],
+            "D": [(planner, "material scope expansion"), (operator, "material scope expansion")],
+            "E": [(fast, "verified evidence"), (state, "stale STATE.md claims")],
+            "F": [(operator, "branch deletion"), (resume, "destructive")],
+            "G": [(operator, "session-only correction"), (operator, "already-installed project-required runtime")],
+            "H": [(resume, "human chooses product priorities"), (state, "human" )],
+        }
+        for scenario, requirements in scenarios.items():
+            for text, term in requirements:
+                self.assertIn(term, text, scenario)
+
+    def test_contracts_preserve_five_file_and_release_compatibility(self):
+        self.assertEqual(STATE_FILES, ["PROJECT.md", "STATE.md", "DECISIONS.md", "REFERENCES.md", "INBOX.md"])
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8"), "1.2.0\n")
+        self.assertTrue((ROOT / "reference" / "ai-development-workflow-v1.2.html").exists())
+        self.assertTrue((ROOT / "reference" / "ai-development-workflow-v1.3.html").exists())
+        self.assertIn("preserve", (ROOT / "README.md").read_text(encoding="utf-8").lower())
+        self.assertIn("written/preserved counts", (ROOT / "README.md").read_text(encoding="utf-8").lower())
+
     def test_sample_state_preserves_five_file_operating_contract(self):
         text = (ROOT / "examples" / "sample-project" / "docs" / "ai" / "STATE.md").read_text(encoding="utf-8")
         for heading in [
