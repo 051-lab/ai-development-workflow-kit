@@ -145,6 +145,8 @@ class KitContractTests(unittest.TestCase):
             "Atomic Next Action",
             "Roles: Human, Planner/Reviewer, Operator",
             "Operator safety boundary",
+            "Independent review",
+            "Strengthened resume behavior",
             "Strengthened resume behavior",
             "There is no automatic correction loop",
             "one independently verifiable completion state",
