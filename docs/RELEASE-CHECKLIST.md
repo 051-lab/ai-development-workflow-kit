@@ -23,7 +23,7 @@ Maintainer checklist for releasing the workflow kit. This is not project runtime
 - [ ] Visible documentation version is consistent.
 - [ ] Reference filename/version is consistent where applicable.
 
-P2 does not perform these final VERSION, reference, or package finalization changes.
+Version and reference alignment belongs exclusively to finalization, before packaging.
 
 ## Package hygiene
 
@@ -34,9 +34,9 @@ P2 does not perform these final VERSION, reference, or package finalization chan
 
 - [ ] Regenerate `MANIFEST.txt` from the exact final package contents.
 - [ ] Verify every recorded hash corresponds to its packaged file.
-- [ ] Do not preserve stale V1.1 hashes merely for history; the historical V1.1 ZIP/MANIFEST remain separate evidence.
+- [ ] Regenerate the manifest only after all distributable release contents are final; historical release artifacts remain separate evidence.
 
-P2 does not regenerate the current MANIFEST.
+Regenerate the current manifest only after the final distributable inventory is frozen.
 
 ## Final artifact validation
 
