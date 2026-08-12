@@ -147,7 +147,6 @@ class KitContractTests(unittest.TestCase):
             "Operator safety boundary",
             "Independent review",
             "Strengthened resume behavior",
-            "Strengthened resume behavior",
             "There is no automatic correction loop",
             "one independently verifiable completion state",
             "STOP and report",
@@ -180,7 +179,7 @@ class KitContractTests(unittest.TestCase):
             self.assertIn("git update-index --refresh", text)
         self.assertIn("discarding changes", texts[0])
 
-
+    def test_sample_state_preserves_five_file_operating_contract(self):
         text = (ROOT / "examples" / "sample-project" / "docs" / "ai" / "STATE.md").read_text(encoding="utf-8")
         for heading in [
             "Operating Rules", "Current Status", "Completed Recently", "In Progress",
@@ -193,7 +192,6 @@ class KitContractTests(unittest.TestCase):
         self.assertIn("one atomic, independently verifiable operation", text)
         self.assertNotIn("TODO", text)
         self.assertNotIn("TBD", text)
-
 
 class BashInitializerTests(unittest.TestCase):
     def run_init(self, repo: Path, *extra):
@@ -301,7 +299,20 @@ class TmuxLauncherTests(unittest.TestCase):
             self.assertIn("attach-session", calls)
 
 class PowerShellContractTests(unittest.TestCase):
-    def test_powershell_initializer_contract(self):
+    def test_workspace_launcher_contract(self):
+        path = SCRIPTS / "start-ai-project.ps1"
+        self.assertTrue(path.exists())
+        text = path.read_text(encoding="utf-8")
+        for term in ["RepositoryPath", "SessionName", "Distribution", "wsl.exe", "wslpath", "start-ai-project.sh", "LASTEXITCODE"]:
+            self.assertIn(term, text)
+        self.assertNotIn("Invoke-Expression", text)
+        self.assertNotIn("bash -c", text)
+        for provider in ["Codex", "OpenCode", "Claude"]:
+            self.assertNotIn(provider, text)
+        for window in ["agent", "test", "git", "logs"]:
+            self.assertNotIn(f"-n {window}", text)
+
+
         path = SCRIPTS / "init-ai-workflow.ps1"
         self.assertTrue(path.exists())
         text = path.read_text(encoding="utf-8")
@@ -317,6 +328,23 @@ class PowerShellContractTests(unittest.TestCase):
         self.assertIn("STATE.md", text)
         self.assertNotIn("Invoke-WebRequest", text)
         self.assertNotIn("irm ", text.lower())
+
+    def test_gitignore_excludes_python_cache(self):
+        text = (ROOT / ".gitignore").read_text(encoding="utf-8")
+        self.assertIn("__pycache__/", text)
+        self.assertIn("*.py[cod]", text)
+
+    def test_release_checklist_contract(self):
+        path = ROOT / "docs" / "RELEASE-CHECKLIST.md"
+        self.assertTrue(path.exists())
+        text = path.read_text(encoding="utf-8")
+        for term in [".git/", "__pycache__/", "*.pyc", "temporary", "Extract the ZIP", "Regenerate `MANIFEST.txt`", "P2 does not", "VERSION"]:
+            self.assertIn(term, text)
+
+    def test_gitignore_excludes_python_cache(self):
+        text = (ROOT / ".gitignore").read_text(encoding="utf-8")
+        self.assertIn("__pycache__/", text)
+        self.assertIn("*.py[cod]", text)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

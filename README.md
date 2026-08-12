@@ -35,7 +35,9 @@ ai-development-workflow-project-kit-v1.1/
 ├── scripts/
 │   ├── init-ai-workflow.sh
 │   ├── init-ai-workflow.ps1
-│   └── start-ai-project.sh
+│   ├── start-ai-project.sh
+│   └── start-ai-project.ps1
+├── docs/RELEASE-CHECKLIST.md
 ├── examples/
 └── tests/
 ```
@@ -88,7 +90,15 @@ This creates or attaches a project-named session with:
 agent | test | git | logs
 ```
 
-The script deliberately opens shells rather than automatically starting a model. Launch OpenCode, Codex, Herdr, or another agent in the `agent` window according to the task.
+### From PowerShell / Windows
+
+```powershell
+& ".\scripts\start-ai-project.ps1" "C:\path\to\your\repo"
+& ".\scripts\start-ai-project.ps1" "C:\path\to\your\repo" -SessionName "my-project" -Distribution "Ubuntu"
+```
+
+This is a thin Windows front-end: PowerShell → WSL → `start-ai-project.sh` → tmux. The Bash launcher remains the single implementation of the `agent`, `test`, `git`, and `logs` workspace; it does not launch an AI provider automatically. WSL and tmux must be available.
+
 
 ### Herdr Boundary
 
