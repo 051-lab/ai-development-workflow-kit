@@ -4,6 +4,10 @@ Execute the scoped repository task below. The repository is the durable source o
 
 ## EVIDENCE RULES
 
+- Before claiming authoritative validation, identify the project-declared authoritative runtime/toolchain/environment.
+- Authorized session-only recovery of an already-installed required runtime is allowed; materially different runtime results are supplementary, not equivalent.
+- Qualifying exact-head external validation under the required environment may establish authoritative evidence when retrieved and verified.
+- If qualifying authoritative evidence is unavailable, do not claim required validation passed.
 - When verified repository/Git/remote/CI/test evidence conflicts with the handoff or stale STATE content, verified evidence wins.
 - Report the mismatch explicitly.
 - Stop if the mismatch materially changes scope or safety, and do not continue blindly.
@@ -35,6 +39,8 @@ List task-specific stops in addition to the global rules: material scope expansi
 
 ## VERIFICATION
 List the exact tests, builds, checks, CI observation, diff review, and evidence needed. Continue when queued/running is an observable external state; otherwise return `PAUSED AT EXTERNAL GATE` rather than claiming background monitoring.
+
+At G8 or another stable durable handoff, ensure semantic durable STATE remains true for completion, blockers, required human decisions, authorization boundary, and exactly one single Next Action. Do not repeat completed lifecycle work because stale STATE says it remains pending. Do not create recursive metadata-chasing commits. If the completed outcome exposes a new human product decision, stop; do not invent it.
 
 ## RETURN
 When finished, return:

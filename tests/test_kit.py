@@ -432,6 +432,39 @@ class KitContractTests(unittest.TestCase):
         self.assertNotIn("TODO", text)
         self.assertNotIn("TBD", text)
 
+    def test_sample_state_g8_semantic_and_human_boundary(self):
+        text = (ROOT / "examples" / "sample-project" / "docs" / "ai" / "STATE.md").read_text(encoding="utf-8")
+        self.assertIn("semantic", text.lower())
+        self.assertIn("forensic", text.lower())
+        self.assertIn("completion", text.lower())
+        self.assertIn("authorization boundary", text.lower())
+        self.assertIn("single Next Action", text)
+        self.assertIn("do not create recursive metadata-chasing commits", text.lower())
+        self.assertEqual(text.count("## Next Action"), 1)
+        self.assertIn("human selects the next product-development priority", text.lower())
+        self.assertNotIn("Implement the next human-selected product priority", text)
+
+    def test_deliberate_planner_carries_runtime_and_g8_contracts(self):
+        text = (PROMPTS / "DELIBERATE-PLANNER.md").read_text(encoding="utf-8")
+        self.assertIn("authoritative runtime/toolchain", text.lower())
+        self.assertIn("supplementary", text.lower())
+        self.assertIn("exact-head", text.lower())
+        self.assertIn("semantic", text.lower())
+        self.assertIn("single Next Action", text)
+        self.assertNotIn("merge authority", text.lower())
+        self.assertNotIn("release authority", text.lower())
+
+    def test_deliberate_builder_carries_runtime_and_g8_contracts(self):
+        text = (PROMPTS / "DELIBERATE-BUILDER.md").read_text(encoding="utf-8")
+        self.assertIn("authoritative runtime/toolchain", text.lower())
+        self.assertIn("supplementary", text.lower())
+        self.assertIn("exact-head", text.lower())
+        self.assertIn("do not claim required validation passed", text.lower())
+        self.assertIn("semantic", text.lower())
+        self.assertIn("single Next Action", text)
+        self.assertIn("human", text.lower())
+        self.assertIn("do not invent", text.lower())
+
 class BashInitializerTests(unittest.TestCase):
     def run_init(self, repo: Path, *extra):
         return subprocess.run(

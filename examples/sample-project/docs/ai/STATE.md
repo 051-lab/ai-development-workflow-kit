@@ -8,7 +8,7 @@
 - STATE preserves conclusions and load-bearing evidence rather than becoming an incident transcript.
 - Next Action is exactly one bounded outcome with one independently verifiable completion state; multiple safe execution steps may realize it, but unrelated goals remain separate.
 - A BOUNDED EXECUTION WINDOW names the goal, scope, constraints, acceptance, verification, furthest authorized lifecycle boundary, and STOP CONDITIONS.
-- Reconcile state at a meaningful project or handoff boundary; do not create metadata-chasing STATE-only commits.
+- Reconcile state at a meaningful project or handoff boundary. Durable semantic state — completion, blockers, required human decisions, authorization boundary, and the single Next Action — must remain true at that boundary. Routine forensic details such as old SHAs, branches, test counts, CI numbers, timestamps, or exact HEAD may remain stale; do not create recursive metadata-chasing commits.
 - Fast Path = contained, clear, low-risk, easy to verify.
 - Deliberate Path = ambiguous, architectural, risky, cross-cutting, or consequential.
 
@@ -34,9 +34,9 @@ None known. A human still chooses the next product priority; the agent does not 
 Working tree was clean when this state was recorded.
 
 ## Next Action
-Implement the next human-selected product priority as one bounded outcome with one independently verifiable completion state.
+Human selects the next product-development priority; the agent does not invent a feature.
 
-Acceptance: The selected outcome passes its authoritative verification.
+Acceptance: One concrete priority is explicitly selected and can be converted into one bounded outcome with one independently verifiable completion state.
 Scope: The explicitly selected feature and required tests only.
 Path: Fast Path if contained; otherwise Deliberate Path with an execution window.
 
