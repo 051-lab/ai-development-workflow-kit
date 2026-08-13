@@ -355,6 +355,15 @@ class KitContractTests(unittest.TestCase):
         self.assertIn("do not claim", operator.lower())
         self.assertIn("unavailable", resume.lower())
 
+    def test_fast_path_orders_runtime_classification_before_verification(self):
+        fast = (PROMPTS / "FAST-PATH.md").read_text(encoding="utf-8")
+        runtime = fast.index("Identify the project-authoritative runtime/toolchain")
+        verification = fast.index("Run focused verification, then the authoritative project verification")
+        g8 = fast.index("At G8 or another meaningful boundary, reconcile")
+        task_return = fast.index("Task follows below:")
+        self.assertLess(runtime, verification)
+        self.assertLess(g8, task_return)
+
     def test_semantic_state_freshness_and_resume_are_explicit(self):
         state = (TEMPLATES / "STATE.md").read_text(encoding="utf-8")
         operator = (PROMPTS / "OPERATOR.md").read_text(encoding="utf-8")
