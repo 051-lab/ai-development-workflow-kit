@@ -20,8 +20,8 @@ Stop and report for hidden architecture, material scope expansion, repeated mean
 
 If CI or another external gate is queued/running, it is not failure. Recheck while the capable session remains active; if this environment cannot remain active or retrieve the result, return `PAUSED AT EXTERNAL GATE` rather than implying background monitoring.
 
-23. Identify the project-authoritative runtime/toolchain before authoritative validation. Use an already-installed runtime through session-only recovery when authorized; otherwise label alternate-runtime results supplementary. Exact-head external validation under the required runtime may establish authoritative evidence when locally unavailable. Do not claim required validation passed without qualifying evidence.
+9. Identify the project-authoritative runtime/toolchain before authoritative validation. Use an already-installed runtime through session-only recovery when authorized; otherwise label alternate-runtime results supplementary. Exact-head external validation under the required runtime may establish authoritative evidence when locally unavailable. Do not claim required validation passed without qualifying evidence.
 
-24. At G8, leave durable semantic STATE correct: completion, blockers, required human decision, and the single Next Action must match the verified post-boundary position. Routine forensic metadata may remain stale until a meaningful update; do not create recursive metadata-chasing commits.
+10. At G8, leave durable semantic STATE correct: completion, blockers, required human decision, and the single Next Action must match the verified post-boundary position. Routine forensic metadata may remain stale until a meaningful update; do not create recursive metadata-chasing commits.
 
-25. Task follows below:
+Task follows below:
