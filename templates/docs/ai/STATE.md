@@ -8,7 +8,7 @@
 - STATE preserves conclusions and load-bearing evidence; investigation history belongs primarily in Git history, commits, PR discussions, test output, CI logs, or durable references.
 - `## Next Action` records exactly one bounded outcome with one independently verifiable completion state. The outcome may contain multiple safe execution steps and routine lifecycle steps; unrelated goals remain separate.
 - A BOUNDED EXECUTION WINDOW makes the approved goal, scope, constraints, acceptance, verification, furthest authorized lifecycle boundary, and applicable STOP CONDITIONS unambiguous.
-- Reconcile STATE at a meaningful project or handoff boundary. Do not create a STATE-only commit merely to chase metadata changed by the previous STATE commit.
+- Reconcile STATE at a meaningful project or handoff boundary. Durable semantic state — completion, blockers, required human decisions, authorization boundary, and the single Next Action — must remain true at that boundary. Routine forensic evidence such as old SHAs, branches, test counts, CI numbers, timestamps, or exact HEAD details may remain stale until the next meaningful update. Do not create a STATE-only commit merely to chase metadata changed by the previous STATE commit; a meaningful semantic reconciliation is different from metadata chasing.
 - Prefer durable facts over self-invalidating details such as exact current HEAD hashes; STATE.md must not become a workflow manual.
 - Fast Path = contained, clear, low-risk, easy to verify.
 - Deliberate Path = ambiguous, architectural, risky, cross-cutting, or consequential.

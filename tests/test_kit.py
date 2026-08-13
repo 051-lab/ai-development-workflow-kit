@@ -343,6 +343,49 @@ class KitContractTests(unittest.TestCase):
         ]:
             self.assertIn(forbidden, operator)
 
+    def test_authoritative_runtime_evidence_is_classified(self):
+        operator = (PROMPTS / "OPERATOR.md").read_text(encoding="utf-8")
+        fast = (PROMPTS / "FAST-PATH.md").read_text(encoding="utf-8")
+        resume = (PROMPTS / "RESUME-PROJECT.md").read_text(encoding="utf-8")
+        reference = (ROOT / "reference" / "ai-development-workflow-v1.3.html").read_text(encoding="utf-8")
+        texts = [operator, fast, resume, reference]
+        corpus = "\n".join(text.lower() for text in texts)
+        for term in ["authoritative runtime", "supplementary", "exact-head"]:
+            self.assertIn(term, corpus)
+        self.assertIn("do not claim", operator.lower())
+        self.assertIn("unavailable", resume.lower())
+
+    def test_fast_path_orders_runtime_classification_before_verification(self):
+        fast = (PROMPTS / "FAST-PATH.md").read_text(encoding="utf-8")
+        runtime = fast.index("Identify the project-authoritative runtime/toolchain")
+        verification = fast.index("Run focused verification, then the authoritative project verification")
+        g8 = fast.index("At G8 or another meaningful boundary, reconcile")
+        task_return = fast.index("Task follows below:")
+        self.assertLess(runtime, verification)
+        self.assertLess(g8, task_return)
+
+    def test_semantic_state_freshness_and_resume_are_explicit(self):
+        state = (TEMPLATES / "STATE.md").read_text(encoding="utf-8")
+        operator = (PROMPTS / "OPERATOR.md").read_text(encoding="utf-8")
+        fast = (PROMPTS / "FAST-PATH.md").read_text(encoding="utf-8")
+        resume = (PROMPTS / "RESUME-PROJECT.md").read_text(encoding="utf-8")
+        reference = (ROOT / "reference" / "ai-development-workflow-v1.3.html").read_text(encoding="utf-8")
+        for text in [state, operator, fast, resume, reference]:
+            self.assertIn("semantic", text.lower())
+            self.assertIn("forensic", text.lower())
+            self.assertIn("G8", text)
+        self.assertIn("must not repeat", resume.lower())
+        self.assertIn("new human decision", resume.lower())
+        self.assertIn("reconcile", operator.lower())
+
+    def test_release_checklist_covers_rc_corrections(self):
+        text = (ROOT / "docs" / "RELEASE-CHECKLIST.md").read_text(encoding="utf-8")
+        for term in [
+            "authoritative runtime", "supplementary", "exact-head",
+            "semantic", "forensic", "G8", "Resume", "repeat",
+        ]:
+            self.assertIn(term.lower(), text.lower())
+
     def test_v13_scenarios_are_encoded_by_authoritative_contracts(self):
         fast = (PROMPTS / "FAST-PATH.md").read_text(encoding="utf-8")
         planner = (PROMPTS / "DELIBERATE-PLANNER.md").read_text(encoding="utf-8")

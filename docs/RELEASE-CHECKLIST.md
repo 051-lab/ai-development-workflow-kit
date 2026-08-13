@@ -8,7 +8,11 @@ Maintainer checklist for releasing the workflow kit. This is not project runtime
 - [ ] Fast Path, Deliberate Path, Operator, Review, Resume, STATE, example, README, and working reference candidate agree.
 - [ ] V1.2 migration remains non-destructive and preserves existing state by default.
 - [ ] External-gate guidance is truthful for environments without background monitoring.
-- [ ] Routine session-only environment recovery is distinguished from persistent changes.
+- [ ] Authoritative runtime/toolchain evidence is identified before validation; alternate-runtime results are explicitly supplementary.
+- [ ] Exact-head external validation under the required runtime is accepted only when retrieved and verified; unavailable authoritative evidence is not claimed as passed.
+- [ ] G8 leaves semantic durable STATE correct: completion, blockers, human decisions, authorization boundary, and the single Next Action.
+- [ ] Routine forensic STATE staleness does not trigger recursive metadata-chasing commits.
+- [ ] Resume reconstructs lifecycle position from evidence and does not repeat completed actions because of stale STATE.
 
 
 ## Source state
