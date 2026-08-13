@@ -226,8 +226,11 @@ class KitContractTests(unittest.TestCase):
         for text in [readme, reference]:
             for term in ["Bounded Execution Window", "furthest authorized lifecycle boundary", "G0", "G8", "STOP CONDITIONS"]:
                 self.assertIn(term, text)
-        self.assertIn("working reference candidate", reference)
-        self.assertIn("not a V1.3.0 release", reference)
+        self.assertIn("Project Kit release V1.3.0", reference)
+        self.assertNotIn("working reference candidate", reference)
+        self.assertNotIn("not a V1.3.0 release", reference)
+        self.assertNotIn("finalization work remains", readme)
+        self.assertIn("ai-development-workflow-project-kit-v1.3.zip", readme)
 
         texts = [
             (ROOT / "README.md").read_text(encoding="utf-8"),
@@ -409,7 +412,7 @@ class KitContractTests(unittest.TestCase):
 
     def test_contracts_preserve_five_file_and_release_compatibility(self):
         self.assertEqual(STATE_FILES, ["PROJECT.md", "STATE.md", "DECISIONS.md", "REFERENCES.md", "INBOX.md"])
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8"), "1.2.0\n")
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8"), "1.3.0\n")
         self.assertTrue((ROOT / "reference" / "ai-development-workflow-v1.2.html").exists())
         self.assertTrue((ROOT / "reference" / "ai-development-workflow-v1.3.html").exists())
         self.assertIn("preserve", (ROOT / "README.md").read_text(encoding="utf-8").lower())
@@ -620,7 +623,7 @@ class PackageHygieneTests(unittest.TestCase):
 class FinalReleaseContractTests(unittest.TestCase):
     def test_v12_version_and_reference_alignment(self):
         version = (ROOT / "VERSION").read_text(encoding="utf-8")
-        self.assertEqual(version, "1.2.0" + chr(10))
+        self.assertEqual(version, "1.3.0" + chr(10))
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         self.assertIn("AI Development Workflow V1.2", readme)
         self.assertIn("reference/ai-development-workflow-v1.2.html", readme)

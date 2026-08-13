@@ -2,7 +2,7 @@
 
 The historical V1.2 identity is preserved in `reference/ai-development-workflow-v1.2.html` (AI Development Workflow V1.2). This working kit evolves so an agent may execute one approved bounded outcome through safe routine lifecycle gates without unnecessary human relay. It intentionally does **not** become a workflow manager. Markdown owns durable state; Git owns code history; your AI tools remain interchangeable.
 
-The accepted historical baseline remains `reference/ai-development-workflow-v1.2.html` (V1.2). A working V1.3 reference candidate is `reference/ai-development-workflow-v1.3.html`; it is not a V1.3.0 release. `VERSION`, final `MANIFEST.txt`, packaging, tagging, and release alignment remain finalization work.
+The accepted historical baseline remains `reference/ai-development-workflow-v1.2.html` (V1.2). This released V1.3.0 kit is documented in `reference/ai-development-workflow-v1.3.html`. `VERSION`, `MANIFEST.txt`, packaging, and distribution naming are aligned for the V1.3.0 release.
 
 The permanent source checkout identity is `ai-development-workflow-kit`. Versioned names such as `ai-development-workflow-project-kit-v1.2.zip` and `ai-development-workflow-project-kit-v1.3.zip` refer to distributions, not source directories.
 
