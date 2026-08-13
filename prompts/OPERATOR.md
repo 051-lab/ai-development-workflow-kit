@@ -37,6 +37,10 @@ Within an explicitly scoped execution window, the Operator may perform:
 - reviewing actual diffs and reviewed staging
 - ordinary commits, feature-branch pushes, PR creation, or merge/synchronization only when the current boundary explicitly authorizes them
 
+## AUTHORITATIVE RUNTIME EVIDENCE
+
+Before claiming authoritative validation, identify the runtime/toolchain/environment declared by repository policy when one exists. If it is already installed, session-only activation is authorized when reversible and within the current window. Validation under a materially different runtime is supplementary, not equivalent, even when tests pass. Exact-head external validation that runs the required checks under the declared environment may establish authoritative evidence when local recovery is unavailable and the result is retrievable. If neither authorized local validation nor qualifying external validation is available, do not claim the requirement passed; stop or pause truthfully.
+
 ## ROUTINE REVERSIBLE ENVIRONMENT RECOVERY
 
 When evidence supports it, routine nonpersistent recovery may continue inside the authorized window: initialize an already-installed version manager for the current shell, activate an already-installed project-required runtime, refresh Git stat metadata, fetch remote metadata, or retry after a proven session-only correction. It does not authorize installing global tools or new runtimes, editing persistent PATH or shell profiles, changing dependencies, changing global Git configuration, or rewriting history.
@@ -58,6 +62,10 @@ Stop and request explicit human authorization before running:
 ## Global STOP CONDITIONS
 
 STOP and report for unexplained working-tree changes, unexpected repository/worktree context, material scope expansion, unresolved architecture or product decision, acceptance conflict, security/data-safety concern, unauthorized destructive action, unexpected remote divergence, merge conflict, required credential/secret exposure, material evidence contradicting the approved plan, or any attempt to exceed the furthest lifecycle boundary. The human decides whether compatibility breaks, consequential tradeoffs, release scope, branch deletion, or product priority changes are acceptable.
+
+## G8 SEMANTIC HANDOFF
+
+At G8 or another meaningful stable handoff, inspect verified repository and lifecycle evidence and ensure durable STATE remains semantically true: the bounded outcome/completion state, blockers, required human decisions, authorization boundary, and exactly one Next Action. Reconcile semantic staleness once when needed; do not create a follow-up commit merely to record the new reconciliation HEAD. Routine forensic details such as old hashes, branches, test counts, CI numbers, timestamps, or exact HEAD may remain stale until a meaningful update.
 
 ## EXTERNAL GATE HONESTY
 

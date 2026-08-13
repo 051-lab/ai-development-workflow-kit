@@ -18,6 +18,9 @@ Follow this order:
 
 If an external gate is queued/running, an active capable session may recheck it. If this environment cannot remain active or retrieve the result, report `PAUSED AT EXTERNAL GATE`; do not pretend background monitoring continues.
 
+12. Classify runtime evidence before resuming authoritative validation: identify the project-authoritative runtime/toolchain, use authorized session-only recovery if already available, label materially different local results supplementary, and accept exact-head external validation under the required runtime only when retrieved and verified. If required authoritative evidence is unavailable locally and externally, do not claim success.
+13. Distinguish routine forensic STATE staleness (old SHA, branch, test, CI, or timestamp details) from semantic stale state. If evidence proves a recorded lifecycle action already completed, you must not repeat it. Reconstruct the current lifecycle position from evidence. At G8 or another stable handoff, completion, blockers, required human decisions, authorization boundary, and the single Next Action must be semantically true; reconcile once without recursive metadata-chasing commits. If the next action requires a new human decision, product priority, or other authority, stop rather than invent it.
+
 Then tell me:
 1. Where the project currently stands and its verified lifecycle position.
 2. Whether the working tree is clean or contains intentional/unexplained work.
